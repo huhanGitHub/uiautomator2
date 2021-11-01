@@ -6,6 +6,7 @@ from util import *
 import multiprocessing
 import timeout_decorator
 from grantPermissonDetector import *
+from uiautomator2 import Direction
 # youtube package name: com.google.android.youtube
 # 192.168.56.101:5555
 # 192.168.56.102:5555
@@ -55,6 +56,17 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     img2 = d2.screenshot()
     xmlScreenSaver(subSaveDir, xml1, xml2, img1, img2, d1_activity, d2_activity)
     clickBounds = hierachySolver(xml1, xml2)
+
+    # swipe forward to collect more data
+    d1.swipe_ext(Direction.FORWARD)
+    d2.swipe_ext(Direction.FORWARD)
+    xml1 = d1.dump_hierarchy(compressed=True)
+    xml2 = d2.dump_hierarchy(compressed=True)
+    img1 = d1.screenshot()
+    img2 = d2.screenshot()
+    xmlScreenSaver(subSaveDir, xml1, xml2, img1, img2, d1_activity, d2_activity)
+    d1.swipe_ext(Direction.BACKWARD)
+    d2.swipe_ext(Direction.BACKWARD)
     if clickBounds is None or len(clickBounds) == 0:
         print('no the same texts to click, exit')
         d1.app_stop(packageName)
@@ -64,6 +76,7 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d2.app_uninstall(packageName)
         return 2
     for i in clickBounds:
+        # click the same text in two screens
         bounds1 = i[0]
         bounds2 = i[1]
         print('click: ' + str(i[-1]))
@@ -77,20 +90,25 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         img22 = d2.screenshot()
         xmlScreenSaver(subSaveDir, xml11, xml22, img11, img22, d1_activity, d2_activity)
 
+        # swipe forward to collect more data
+        d1.swipe_ext(Direction.FORWARD)
+        d2.swipe_ext(Direction.FORWARD)
+        xml11 = d1.dump_hierarchy(compressed=True)
+        xml22 = d2.dump_hierarchy(compressed=True)
+        img11 = d1.screenshot()
+        img22 = d2.screenshot()
+        xmlScreenSaver(subSaveDir, xml11, xml22, img11, img22, d1_activity, d2_activity)
+        d1.swipe_ext(Direction.BACKWARD)
+        d2.swipe_ext(Direction.BACKWARD)
+
+        # back to the original page
         d1.press('back')
         d2.press('back')
+        print('back')
         d1.app_start(packageName, use_monkey=True)
         d2.app_start(packageName, use_monkey=True)
         d1.sleep(3)
         d2.sleep(3)
-        # d1.press('back')
-        # d2.press('back')
-        # d1_activity, d1_package, d1_launcher = getActivityPackage(d1)
-        # d2_activity, d2_package, d2_launcher = getActivityPackage(d2)
-        # if d1_launcher or d2_launcher:
-        #     d1.app_start(packageName, use_monkey=True)
-        #     d2.app_start(packageName, use_monkey=True)
-        #     time.sleep(3)
 
     d1.app_stop(packageName)
     d2.app_stop(packageName)
