@@ -191,10 +191,14 @@ def batchUiExplorer():
             continue
         apk, status = i.split(delimiter)
         apks[apk] = int(status)
+
+    index = 0
     with open(log, 'a+') as f:
         for root, dirs, files in os.walk(apksDir):
             for file in files:
                 if file.endswith('.apk') or file.endswith('.xapk'):
+                    print('apk ' + str(index))
+                    index += 1
                     filePath = os.path.join(root, file)
                     status = apks.get(file, None)
                     if status in ignoreApkStatus:
