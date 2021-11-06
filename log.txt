@@ -1,12 +1,92 @@
-JW.apk 0
-Wattpad.apk 0
-VidMate.apk 2
-bilibili_v1.16.2_apkpure.com.apk 0
-VidMate.apk 0
-Google.apk 0
-youtube.apk 1
-Amazon.apk 0
-Messenger.apk 0
-Instag.apk 0
-Facebook_v342.0.0.37.119_apkpure.com.apk 0
-youtube.apk 0
+[PRODUCTIVITY] Send Anywhere _File Transfer_ by Estmob Inc. - com.estmob.android.sendanywhere.apk ||| 1
+[LIBRARIES_AND_DEMO] Virtual Family simulator _ Real life games by Virtual Entertainment Studio - com.gp.virtual.family.simulator.real.life.games.apk ||| 1
+[LIBRARIES_AND_DEMO] Test DPC by Sample developer - com.afwsamples.testdpc.apk ||| 1
+[COMICS] Robot Car Transform 2020 _ Robo Wars by Robot Superhero Games - com.rsg.grand.ultimate.robot.car.transform.city.battle.shooting.fight.simulator.games.apk ||| 1
+[WEATHER] Spider Rope Hero Man_ Miami City Gangster 2021 by Zmmy Games - com.spider.rope.hero.man.apk ||| 1
+[COMICS] Real FPS Modern Strike Robot Shooting Game by Victor Gamez - com.vgs.counter.terrorist.attack.death.game.apk ||| 1
+[SPORTS] Iron Rope Hero War - Superhero Games by TWGames - com.tw.spider.ninja.kid.superhero.apk ||| 1
+[COMICS] Lion Vs Tiger Wild Animal Simulator Game by animal fun simulator - com.animalfs.lion.vs.tiger.apk ||| 1
+[ANDROID_WEAR] File Manager TV USB OTG Cast Cloud WiFi Explorer by DWorkS - dev.dworks.apps.anexplorer.apk ||| 1
+[ANDROID_WEAR] MyRadar Weather Radar by ACME AtronOmatic LLC - com.acmeaom.android.myradar.apk ||| 1
+[PRODUCTIVITY] SuperNet VPN- Free Unlimited Proxy_ Secure Browser by Snow Heaven Studio - de.yuzhi.supervpn.apk ||| 1
+[PARENTING] Timo Kids Routine Timer - from Morning to Evening by Timo Inc. - com.timo.time.apk ||| 1
+[LIBRARIES_AND_DEMO] Spaceship Robot Bike Game 2021 by Brave Jackals - com.appstrend.spaceship.robot.transforming.car.game.apk ||| 1
+[TOOLS] VPN Surfshark_ Fast VPN Servers _ Secure VPN Proxy by Surfshark VPN _ Secure VPN app - com.surfshark.vpnclient.android.apk ||| 1
+[LIFESTYLE] Nest by Nest Labs Inc. - com.nest.android.apk ||| 1
+[TRAVEL_AND_LOCAL] Jet Robot Car Transformation _Robot Car Games by Grand Robot Fight - com.grand.robot.fight.grand.airjet.robot.epic.transform.car.us.police.army.shooting.battle.games.apk ||| 1
+[EDUCATION] Star Walk 2 Free - Sky Map_ Stars _ Constellations by Vito Technology - com.vitotechnology.StarWalk2Free.apk ||| 1
+[COMICS] US Police Tow Truck Transport  Simulator Game 2019 by Imperial Arts Pty Ltd - com.impp.police.towtruck.trailer.apk ||| 1
+[ENTERTAINMENT] Tubi - Free Movies _ TV Shows by Tubi TV - com.tubitv.apk ||| 1
+[LIBRARIES_AND_DEMO] Modern Bus Parking_ Ultimate Bus Driving Simulator by Nitro Games Production - com.nitrogames.coach.bus.parking.hero.best.bus.parking.school.freegames.apk ||| 1
+[COMICS] Gun Strike 2 _ Commando Secret Mission-FPS Game by Super Lighting Game Studio - com.fun.secretmission.commando.ops.apk ||| 1
+[LIBRARIES_AND_DEMO] Mega Ramp - Car Racing _ Stunts for Kids by Butter Bites - com.bb.mega.ramp.car.racing.stunts.apk ||| 1
+[PARENTING] Dono Words - ABC_ Numbers_ Words_ Kids Games by GameFall - com.GameFall.Dono.apk ||| 1
+[EDUCATION] Sago Mini Camping by Sago Mini - com.sagosago.Camping.googleplay.apk ||| 1
+[PRODUCTIVITY] VPN Unlimited - Free VPN Proxy Shield by KeepSolid Inc - com.simplexsolutionsinc.vpn_unlimited.apk ||| 1
+[COMICS] Demolition Derby 2021_ Car Crash Destruction Games by Tonto Game Studio - com.tgs.Demolition.Derby.Car.Crash.Destruction.Games.apk ||| 1
+[WEATHER] Weather by MacroPinch - com.macropinch.swan.apk ||| 1
+[AUTO_AND_VEHICLES] AutoExpreso Móvil by Technology Partners - com.technologypartnerspr.autoexpreso.apk ||| 1
+[COMMUNICATION] Shadowsocks by Max Lv - com.github.shadowsocks.apk ||| 1
+[COMICS] Wolf Game 2020 by Amazing Super Fun Games - com.asfg.wolf.game.attack.simulator.apk ||| 1
+[WEATHER] Tuk Tuk Rickshaw 3D Stunt_ Auto Stunt Games 2021 by Trends Games Production - com.trendsgamesproduction.tuktuk.rickshaw.stunt.master.driving.games2021.apk ||| 1
+[PRODUCTIVITY] TeamViewer QuickSupport by TeamViewer - com.teamviewer.quicksupport.market.apk ||| 1
+[AUTO_AND_VEHICLES] Huracan Drift Simulator by Process Games - com.ProcessGames.HuracanDriftSimulator.apk ||| 1
+[EDUCATION] Dr. Panda Town_ Vacation by Dr. Panda - com.drpanda.town.holiday.apk ||| 1
+[EDUCATION] Sago Mini Babies Daycare by Sago Mini - com.sagosago.Babies.Trial.googleplay.apk ||| 1
+[EVENTS] Super Train robot transformation_ Grand robot game by yalinada kantalagos - com.train.robot.car.game.robots.apk ||| 1
+[EDUCATION] Miga Town_ My TV Shows by XiHe Digital _GuangZhou_ Technology Co._ Ltd. - com.miga.mytvshows.apk ||| 1
+[HOUSE_AND_HOME] Room Planner_ Home Interior _ Floorplan Design 3D by iCanDesign LLC - com.icandesignapp.all.apk ||| 1
+[EDUCATION] Sago Mini World_ Kids Games by Sago Mini - com.sagosago.World.googleplay.apk ||| 1
+[MUSIC_AND_AUDIO] Guitar - play music games_ pro tabs and chords_ by MWM - Free music and creative apps for Android - com.mwm.guitar.apk ||| 1
+[COMICS] Farm Animal Simulator_ Family Farming by Dump Games - com.dumpgames.farm.animal.simulator.family.farming.apk ||| 1
+[LIBRARIES_AND_DEMO] Monster Robot Wars_ FPS Dinosaur Battles by Offline Battleground Games - com.ibs.dinosaur.kingdom.battle.simulator.apk ||| 1
+[LIBRARIES_AND_DEMO] Flying Fire Hero Police Robot_ Gangster Chase Game by AI Game Studio - com.ludosmobile.captain.girl.hero.ny.street.fighting.apk ||| 1
+[EDUCATION] Bubble Tea Maker - Milk Tea Shop by FunPop - com.funpop.android_bubbletea.apk ||| 1
+[AUTO_AND_VEHICLES] غرامات مرورية _العراق_ by Raafat Salih Muhammad - com.raafat.fines.apk ||| 1
+[PRODUCTIVITY] RS File _ File Manager _ Explorer EX by RS Mobile Group - com.rs.explorer.filemanager.apk ||| 1
+[MUSIC_AND_AUDIO] Karaoke - Sing Karaoke_ Unlimited Songs by Yokee_ - com.famousbluemedia.yokee.apk ||| 1
+[COMICS] Spider Rope Hero Gangster_ Crime City Simulator 3D by trending action_comic _simulation new free games - com.spider.rope.hero.gangster.crime.city.simulator.apk ||| 1
+[TOOLS] VPN Surfshark - Fastest VPN Proxy Servers by Surfshark VPN _ Secure VPN app - com.surfshark.vpnclient.android.apk ||| 1
+[EDUCATION] LooLoo Kids - Nursery Rhymes and Children_s Songs by COLORCITY - Nursery Rhymes and Children_s Songs - net.colorcity.loolookids.apk ||| 1
+[HOUSE_AND_HOME] Home Assistant by Home Assistant - io.homeassistant.companion.android.apk ||| 1
+[EDUCATION] Miga Town_ My School by XiHe Digital _GuangZhou_ Technology Co._ Ltd. - com.miga.myschool.apk ||| 1
+[WEATHER] Train Derby Demolition _ Car Destruction Sim 2021 by Trends Games Production - com.trends.games.production.train.crash.destruction.car.demolition.derby.simulator.apk ||| 1
+[AUTO_AND_VEHICLES] CarSim M5_C63 by Oppana Games - com.com.OppanaGames.Cars.C63.M5.apk ||| 1
+[EDUCATION]_Sago_Mini_Bab.apk ||| 1
+[TRAVEL_AND_LOCAL]_Boondo.apk ||| 1
+[EDUCATION]_Sago_Mini_Bab.apk ||| 1
+[TRAVEL_AND_LOCAL]_Boondo.apk ||| 1
+[EDUCATION]_Sago_Mini_Bab.apk ||| 1
+[TRAVEL_AND_LOCAL]_Boondo.apk ||| 1
+[WEATHER]_Tractor_Farming.apk ||| 2
+[TOOLS]_ExpressVPN_-__1_T.apk ||| 1
+[TOOLS]_NordVPN___fast_VP.apk ||| 1
+[ANDROID_WEAR]_Sun_Player.apk ||| 1
+[COMICS]_Angry_Crocodile_.apk ||| 1
+[EDUCATION]_Yousician_-_G.apk ||| 1
+[COMICS]_Iron_Stickman_Ro.apk ||| 2
+[AUTO_AND_VEHICLES]_غراما.apk ||| 1
+[ENTERTAINMENT]_Freeplay_.apk ||| 1
+[EDUCATION]_Miga_Town_by_.apk ||| 1
+[WEATHER]_Weather_by_Macr.apk ||| 1
+[PERSONALIZATION]_Text_Fo.apk ||| 1
+[BUSINESS]_Remote_Desktop.apk ||| 2
+[VIDEO_PLAYERS]_Kodi_by_K.apk ||| 1
+[SOCIAL]_LEGO__VIDIYO__by.apk ||| 1
+[COMICS]_Super_Hero_Gener.apk ||| 1
+[EDUCATION]_Sago_Mini_Wor.apk ||| 1
+[COMICS]_Superhero_Slithe.apk ||| 2
+[COMICS]_Little_Nightmare.apk ||| 2
+[ENTERTAINMENT]_Lie_or_Tr.apk ||| 2
+[COMICS]_Farm_Animal_Simu.apk ||| 1
+[COMICS]_Cover_Free_Fire_.apk ||| 2
+[COMMUNICATION]_OpenVPN_f.apk ||| 0
+[COMICS]_Prison_Escape-_J.apk ||| 1
+[WEATHER]_Tractor_Farming.apk ||| 2
+[WEATHER]_Tractor_Farming.apk ||| 2
+[COMICS]_Iron_Stickman_Ro.apk ||| 2
+[BUSINESS]_Remote_Desktop.apk ||| 2
+[COMICS]_Superhero_Slithe.apk ||| 2
+[COMICS]_Little_Nightmare.apk ||| 2
+[ENTERTAINMENT]_Lie_or_Tr.apk ||| 2
+[WEATHER]_Tractor_Farming.apk ||| 2

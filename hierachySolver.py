@@ -79,7 +79,7 @@ def hierachySolver(xml1, xml2):
     tree2 = ET.ElementTree(ET.fromstring(xml2))
     root2 = tree2.getroot()
 
-    # find all textviews in two xml
+    # find all textviews in two xmls
     phoneViews = []
     tabletViews = []
     for child in root1.iter():
@@ -97,7 +97,7 @@ def hierachySolver(xml1, xml2):
             tabletViews.append(child)
 
     if len(phoneViews) <= 0:
-        return False
+        return None
 
     top, bottom, middle = pairTextview(phoneViews, tabletViews)
     if top is None and bottom is None and middle is None:

@@ -10,6 +10,10 @@ from uiautomator2 import Direction
 # youtube package name: com.google.android.youtube
 # 192.168.56.101:5555
 # 192.168.56.102:5555
+delimiter = ' ||| '
+ignoreApkStatus = [0, 1]
+loadSleepTime = 8
+switchSleepTime = 3
 
 
 # return value 0 success, 1 install fail, 2 no the same texts, 3 time out
@@ -34,40 +38,28 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         print('install ' + apkPath + ' fail.')
         return 1
     d2.app_start(packageName, use_monkey=True)
-    subSaveDir = os.path.join(saveDir, packageName)
-    if not os.path.exists(subSaveDir):
-        os.mkdir(subSaveDir)
 
+    # wait for opening apps on two devices
     d1.sleep(5)
     d2.sleep(5)
 
     d1_activity, d1_package, d1_launcher = getActivityPackage(d1)
     d2_activity, d2_package, d2_launcher = getActivityPackage(d2)
     if d1_package != d2_package or d1_activity != d2_activity:
-        print('wait, sleep 3 s')
-        d1.sleep(3)
-        d2.sleep(3)
+        print('pls wait, load sleep time')
+        d1.sleep(loadSleepTime)
+        d2.sleep(loadSleepTime)
 
     grantPermissinActivitySolver(d1)
     grantPermissinActivitySolver(d2)
-    xml1 = d1.dump_hierarchy(compressed=True)
-    xml2 = d2.dump_hierarchy(compressed=True)
-    img1 = d1.screenshot()
-    img2 = d2.screenshot()
-    xmlScreenSaver(subSaveDir, xml1, xml2, img1, img2, d1_activity, d2_activity)
-    clickBounds = hierachySolver(xml1, xml2)
 
-    # swipe forward to collect more data
-    d1.swipe_ext(Direction.FORWARD)
-    d2.swipe_ext(Direction.FORWARD)
     xml1 = d1.dump_hierarchy(compressed=True)
     xml2 = d2.dump_hierarchy(compressed=True)
     img1 = d1.screenshot()
     img2 = d2.screenshot()
-    xmlScreenSaver(subSaveDir, xml1, xml2, img1, img2, d1_activity, d2_activity)
-    d1.swipe_ext(Direction.BACKWARD)
-    d2.swipe_ext(Direction.BACKWARD)
-    if clickBounds is None or len(clickBounds) == 0:
+    clickBounds1 = hierachySolver(xml1, xml2)
+
+    if clickBounds1 is None or len(clickBounds1) == 0:
         print('no the same texts to click, exit')
         d1.app_stop(packageName)
         d2.app_stop(packageName)
@@ -75,7 +67,13 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d1.app_uninstall(packageName)
         d2.app_uninstall(packageName)
         return 2
-    for i in clickBounds:
+    else:
+        subSaveDir = os.path.join(saveDir, packageName)
+        if not os.path.exists(subSaveDir):
+            os.mkdir(subSaveDir)
+        xmlScreenSaver(subSaveDir, xml1, xml2, img1, img2, d1_activity, d2_activity)
+
+    for i in clickBounds1:
         # click the same text in two screens
         bounds1 = i[0]
         bounds2 = i[1]
@@ -104,12 +102,71 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         # back to the original page
         d1.press('back')
         d2.press('back')
-        print('back')
+        print('back...')
+        d1.app_start(packageName, use_monkey=True)
+        d2.app_start(packageName, use_monkey=True)
+        d1.sleep(switchSleepTime)
+        d2.sleep(switchSleepTime)
+
+    # swipe forward to collect more data
+    d1.swipe_ext(Direction.FORWARD)
+    d2.swipe_ext(Direction.FORWARD)
+    xmla = d1.dump_hierarchy(compressed=True)
+    xmlb = d2.dump_hierarchy(compressed=True)
+    imga = d1.screenshot()
+    imgb = d2.screenshot()
+    xmlScreenSaver(subSaveDir, xmla, xmlb, imga, imgb, d1_activity, d2_activity)
+
+    clickBounds2 = hierachySolver(xmla, xmlb)
+
+    if clickBounds2 is None or len(clickBounds2) == 0:
+        print('no the same texts to click, exit')
+        d1.app_stop(packageName)
+        d2.app_stop(packageName)
+        print('uninstall ' + packageName)
+        d1.app_uninstall(packageName)
+        d2.app_uninstall(packageName)
+        return 2
+
+    for i in clickBounds2:
+        if i in clickBounds1:
+            continue
+        # click the same text in two screens
+        bounds1 = i[0]
+        bounds2 = i[1]
+        print('click: ' + str(i[-1]))
+        d1.click((bounds1[0] + bounds1[2]) / 2, (bounds1[1] + bounds1[3]) / 2)
+        d2.click((bounds2[0] + bounds2[2]) / 2, (bounds2[1] + bounds2[3]) / 2)
+        d1.sleep(3)
+        d2.sleep(3)
+        xml11 = d1.dump_hierarchy(compressed=True)
+        xml22 = d2.dump_hierarchy(compressed=True)
+        img11 = d1.screenshot()
+        img22 = d2.screenshot()
+        xmlScreenSaver(subSaveDir, xml11, xml22, img11, img22, d1_activity, d2_activity)
+
+        # swipe forward to collect more data
+        d1.swipe_ext(Direction.FORWARD)
+        d2.swipe_ext(Direction.FORWARD)
+        xml11 = d1.dump_hierarchy(compressed=True)
+        xml22 = d2.dump_hierarchy(compressed=True)
+        img11 = d1.screenshot()
+        img22 = d2.screenshot()
+        xmlScreenSaver(subSaveDir, xml11, xml22, img11, img22, d1_activity, d2_activity)
+        d1.swipe_ext(Direction.BACKWARD)
+        d2.swipe_ext(Direction.BACKWARD)
+
+        # back to the original page
+        d1.press('back')
+        d2.press('back')
+        print('back...')
         d1.app_start(packageName, use_monkey=True)
         d2.app_start(packageName, use_monkey=True)
         d1.sleep(3)
         d2.sleep(3)
 
+    # d1.swipe_ext(Direction.BACKWARD)
+    # d2.swipe_ext(Direction.BACKWARD)
     d1.app_stop(packageName)
     d2.app_stop(packageName)
     print('uninstall ' + packageName)
@@ -119,7 +176,7 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
 
 
 def batchUiExplorer():
-    apksDir = r'apks'
+    apksDir = r'/Users/hhuu0025/Downloads/tem'
     saveDir = r'saveData'
     device1Id = '192.168.56.101:5555'
     device2Id = '192.168.56.102:5555'
@@ -130,33 +187,36 @@ def batchUiExplorer():
     apks = {}
     for i in lines:
         i = i.replace('\n', '')
-        apk, status = i.split(' ')
+        if i == '':
+            continue
+        apk, status = i.split(delimiter)
         apks[apk] = int(status)
     with open(log, 'a+') as f:
-        for file in os.listdir(apksDir):
-            if file.endswith('.apk') or file.endswith('.xapk'):
-                filePath = os.path.join(apksDir, file)
-                status = apks.get(file, None)
-                if status == 0:
-                    print(filePath + 'has been explored')
-                    continue
-                try:
-                    ret = uiExplorer(filePath, saveDir, device1Id, device2Id)
-                    apks[file] = ret
-                    if ret == 0:
-                        f.write(file + ' 0' + '\n')
-                    elif ret == 1:
-                        f.write(file + ' 1' + '\n')
-                    elif ret == 2:
-                        f.write(file + ' 2' + '\n')
-                except StopIteration:
-                    print('time out ' + file)
-                    apks[file] = 3
-                    f.write(file + ' 3' + '\n')
+        for root, dirs, files in os.walk(apksDir):
+            for file in files:
+                if file.endswith('.apk') or file.endswith('.xapk'):
+                    filePath = os.path.join(root, file)
+                    status = apks.get(file, None)
+                    if status in ignoreApkStatus:
+                        print(filePath + 'has been explored')
+                        continue
+                    try:
+                        ret = uiExplorer(filePath, saveDir, device1Id, device2Id)
+                        apks[file] = ret
+                        if ret == 0:
+                            f.write(file + delimiter + '0' + '\n')
+                        elif ret == 1:
+                            f.write(file + delimiter + '1' + '\n')
+                        elif ret == 2:
+                            f.write(file + delimiter + '2' + '\n')
+                    except StopIteration:
+                        print('time out ' + file)
+                        apks[file] = 3
+                        f.write(file + delimiter + '3' + '\n')
 
 
-def singleTest():
-    apkPath = 'apks/youtube.apk'
+def unitTest():
+    apkPath = '/Users/hhuu0025/PycharmProjects/uiautomator2/apks/[PRODUCTIVITY]SendAnywhere _File Transfer_ by Estmob Inc.-com.estmob.android.sendanywhere.apk'
     saveDir = 'saveData'
     device1Id = '192.168.56.101:5555'
     device2Id = '192.168.56.102:5555'
@@ -164,5 +224,5 @@ def singleTest():
 
 
 if __name__ == '__main__':
-    #singleTest()
+    # unitTest()
     batchUiExplorer()

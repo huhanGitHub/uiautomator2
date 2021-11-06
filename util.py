@@ -94,3 +94,24 @@ def xmlScreenSaver(saveDir, xml1, xml2, img1, img2, activity1, activity2):
         f2.write(xml2)
         img1.save(img1Path)
         img2.save(img2Path)
+
+
+def shorterFilename(saveDir):
+    for root, dirs, files in os.walk(saveDir):
+        for file in files:
+            if str(file).endswith('.apk') or str(file).endswith('.xapk'):
+                filePath = os.path.join(root, file)
+                fields = file.split('.')
+                extention = fields[-1]
+                name = '.'.join(fields[:-1])
+                if len(name) > 25:
+                    name = name[:25]
+                name = name.replace(' ', '_')
+                newFile = name + '.' + extention
+                newFilePath = os.path.join(root, newFile)
+                os.rename(filePath, newFilePath)
+
+
+if __name__ =='__main__':
+    saveDir = r'/Users/hhuu0025/Downloads/tem'
+    shorterFilename(saveDir)

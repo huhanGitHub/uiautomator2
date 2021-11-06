@@ -8,7 +8,7 @@ grantPermissinActivityFieldList = ['grantpermissions', 'grantpermission']
 textViewList = ['android.widget.TextView', 'android.widget.Button']
 yesFields = ['allow', 'yes']
 noFields = ['deny', 'no']
-dialogField = ['ok']
+dialogField = ['ok', 'got it']
 
 # com.android.packageinstaller.permission.ui.GrantPermissionsActivity deny allow
 def grantPermissinActivityDetector(d):
