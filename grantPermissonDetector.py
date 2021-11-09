@@ -2,13 +2,16 @@ import time
 
 from util import *
 import xml.etree.ElementTree as ET
-from hierachySolver import *
+from hierachySolver import bounds2int
 
 grantPermissinActivityFieldList = ['grantpermissions', 'grantpermission']
-textViewList = ['android.widget.TextView', 'android.widget.Button']
+dialogList = ['android.widget.TextView', 'android.widget.Button']
 yesFields = ['allow', 'yes']
 noFields = ['deny', 'no']
-dialogField = ['ok', 'got it', 'allow', 'yes', 'always', 'cancel']
+dialogField = ['ok', 'got it', 'allow', 'yes', 'always', 'cancel', 'continue', 'exit']
+framelayoutList = ['android.widget.FrameLayout']
+dialogNameField = ['dialog']
+
 
 # com.android.packageinstaller.permission.ui.GrantPermissionsActivity deny allow
 def grantPermissinActivityDetector(d):
@@ -28,7 +31,7 @@ def grantPermissinActivityDetector(d):
         className = child.attrib.get('class', None)
         if className is None:
             continue
-        if className in textViewList:
+        if className in dialogList:
             textViews.append(child)
 
     yesStatus = False
@@ -44,9 +47,7 @@ def grantPermissinActivityDetector(d):
     if yesStatus and noStatus:
         status = True
 
-    # check system dialog 'ok' in framelayout
-    framelayoutList = ['android.widget.FrameLayout']
-    framelayouts = []
+    # check dialog in framelayout
     for child in root1.iter():
         className = child.attrib.get('class', None)
         if className is None:
@@ -56,14 +57,44 @@ def grantPermissinActivityDetector(d):
                 className = widget.attrib.get('class', None)
                 if className is None:
                     continue
-                if className in textViewList:
-                    text = widget.attrib.get('text', None)
-                    text = text.lower()
-                    if text in dialogField:
-                        bounds = widget.attrib.get('bounds')
-                        bounds = bounds2int(bounds)
-                        d.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
-                        print('solve system dialog')
+                text = widget.attrib.get('text')
+                text = text.lower()
+                if text in dialogField:
+                    bounds = widget.attrib.get('bounds')
+                    bounds = bounds2int(bounds)
+                    d.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+                    print('solve dialog')
+
+    # check dialog by fields
+    for child in root1.iter():
+        className = child.attrib.get('class', None)
+        if className is None:
+            continue
+        if className in framelayoutList:
+            resourceId = child.attrib.get('resource-id')
+            if resourceId is None or resourceId == '':
+                continue
+            tag = False
+            for i in dialogNameField:
+                if i in resourceId:
+                    tag = True
+                    break
+            if not tag:
+                continue
+
+            for widget in child.iter():
+                className = widget.attrib.get('class', None)
+                if className is None:
+                    continue
+                if className == 'android.widget.Button':
+                    clickable = widget.attrib.get('clickable', False)
+                    if not clickable:
+                        continue
+                    bounds = widget.attrib.get('bounds')
+                    bounds = bounds2int(bounds)
+                    d.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+                    print('solve dialog')
+
     return status
 
 
@@ -76,7 +107,7 @@ def grantPermissinActivityTasker(d):
         className = child.attrib.get('class', None)
         if className is None:
             continue
-        if className in textViewList:
+        if className in dialogList:
             text = child.attrib.get('text', None)
             text = text.lower()
             if text in yesFields:
@@ -84,9 +115,11 @@ def grantPermissinActivityTasker(d):
                 bounds = bounds2int(bounds)
                 if bounds[1] >= 200 and bounds[3] <= 1600:
                     d.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+                    print('solve grant permission activity')
 
 
-def grantPermissinActivitySolver(d):
+def dialogSolver(d):
     while grantPermissinActivityDetector(d):
         grantPermissinActivityTasker(d)
-        print('solve grant permission activity')
+
+    d.sleep(3)

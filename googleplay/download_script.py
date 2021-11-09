@@ -20,10 +20,13 @@ if __name__ == '__main__':
 			# os.system("pipenv run python ../PlaystoreDownloader/playstoredownloader/downloader/download.py \""+id +"\" -t \""+cat+"\"")
 
 			# use apkpure to replace
-			apkpureDownloader(cat, id, saveDir)
-			time.sleep(5)
 			index += 1
 			print(id + ' ' + str(index) + '/' + str(len(ids)))
+			if index < 171:
+				continue
+			apkpureDownloader(cat, id, saveDir)
+			time.sleep(5)
+
 		f.close()
 
 

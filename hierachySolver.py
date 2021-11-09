@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 viewList = ['android.widget.TextView', 'android.widget.ImageView', 'android.widget.Button']
 removeView = ['']
 textViewList = ['android.widget.TextView']
-
+middleTexts = ['search']
 
 def nodeCompare(node1, node2):
     text1 = node1.attrib.get('text', None)
@@ -51,11 +51,17 @@ def pairTextview(phoneViews, tabletViews):
         bounds = view.attrib.get('bounds')
         bounds = bounds2int(bounds)
         bounds2 = bounds2int(i[1].attrib.get('bounds'))
+        text = view.attrib.get('text').lower()
         y1 = bounds[1]
         y2 = bounds[3]
-        if y2 < 200:
-            top.append([bounds, bounds2, i[-1]])
-            continue
+        if y2 < 300:
+            hasmiddle = False
+            for j in middleTexts:
+                if j in text:
+                    hasmiddle = True
+            if not hasmiddle:
+                top.append([bounds, bounds2, i[-1]])
+                continue
         elif y1 > 1700:
             bottom.append([bounds, bounds2, i[-1]])
             continue

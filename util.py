@@ -78,6 +78,10 @@ def similar(a, b):
 
 
 def xmlScreenSaver(saveDir, xml1, xml2, img1, img2, activity1, activity2):
+    if img1 is None or img2 is None:
+        print('none img, save fail, return')
+        return
+
     t = int(time.time())
     xml1Name = 'phone_' + str(t) + '_' + activity1 + '.xml'
     img1Name = 'phone_' + str(t) + '_' + activity1 + '.png'
@@ -110,6 +114,14 @@ def shorterFilename(saveDir):
                 newFile = name + '.' + extention
                 newFilePath = os.path.join(root, newFile)
                 os.rename(filePath, newFilePath)
+
+
+def safeScreenshot(d):
+    try:
+        img = d.screenshot()
+        return img
+    except Exception:
+        return None
 
 
 if __name__ =='__main__':

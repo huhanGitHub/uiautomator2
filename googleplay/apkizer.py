@@ -5,6 +5,7 @@ from requests.models import Response
 import cloudscraper
 import os
 import timeout_decorator
+
 collectExtentions = ['APK']
 
 
@@ -20,13 +21,22 @@ def apkpureDownloader(cat, package_name, saveDir):
     catDir = os.path.join(saveDir, cat)
     if not os.path.exists(catDir):
         os.mkdir(catDir)
-    scraper = cloudscraper.create_scraper(delay=10)
+    scraper = cloudscraper.create_scraper(delay=10,
+                                          browser={
+                                              'browser': 'chrome',
+                                              'platform': 'windows',
+                                              'mobile': False
+                                          }
+                                          )
+
     base_url = "https://apkpure.com"
     # package_name = args.p
     package_url = ""
     download_version_list = []
-    response = scraper.get("https://apkpure.com/tr/search?q=" + package_name).text
-
+    session = requests.session()
+    response = scraper.get("https://apkpure.com/search?q=" + package_name).text
+    # response = session.get("https://apkpure.com/tr/search?q=" + package_name).text
+    # cfresponse = cfscraper.get("https://apkpure.com/tr/search?q=" + package_name).text
     soup = bs4.BeautifulSoup(response, "html.parser")
     a_elements = soup.find_all("a")
 
@@ -42,18 +52,22 @@ def apkpureDownloader(cat, package_name, saveDir):
             apkpureDownloader(cat, package_name, saveDir)
         else:
             print("Package not found!")
-
         return
 
     """
     Here is full URL correlated with package name.
     """
-    # here, click versions button not 'download apk' to see all app versions to find the suitable version.
-    response = scraper.get(base_url + package_url + "/versions").text
-    soup = bs4.BeautifulSoup(response, "html.parser")
+    # here, click versions button not 'download apk' to see all app versions to find the suitable apk version.
 
-    versions_elements_div = soup.find("ul", attrs={"class": "ver-wrap"})
-    versions_elements_li = versions_elements_div.findAll("li", recursive=False)
+    try:
+        response = scraper.get(base_url + package_url + "/versions").text
+        soup = bs4.BeautifulSoup(response, "html.parser")
+
+        versions_elements_div = soup.find("ul", attrs={"class": "ver-wrap"})
+        versions_elements_li = versions_elements_div.findAll("li", recursive=False)
+    except Exception:
+        print('raise exception when parse available apks, skip')
+        return
 
     for list_item in versions_elements_li:
         # find suitable url
@@ -72,12 +86,17 @@ def apkpureDownloader(cat, package_name, saveDir):
     """
 
     def download_apk(download_page):
-        soup = bs4.BeautifulSoup(download_page, "html.parser")
-        download_link = soup.find("iframe", {"id": "iframe_download"}).attrs["src"]
-        filename = soup.find("span", {"class": "file"}).text.rsplit(' ', 2)[0].replace(" ", "_").lower()
-        print(filename + " is downloading, please wait..")
-        file = scraper.get(download_link)
-        #current_directory = os.getcwd()
+        try:
+            soup = bs4.BeautifulSoup(download_page, "html.parser")
+            download_link = soup.find("iframe", {"id": "iframe_download"}).attrs["src"]
+            filename = soup.find("span", {"class": "file"}).text.rsplit(' ', 2)[0].replace(" ", "_").lower()
+            print(filename + " is downloading, please wait..")
+            file = scraper.get(download_link)
+        except Exception:
+            print('raise exception when download apk, skip')
+            return
+
+        # current_directory = os.getcwd()
         final_directory = os.path.join(catDir, package_name)
         if not os.path.exists(final_directory):
             os.makedirs(final_directory)

@@ -11,13 +11,13 @@ from uiautomator2 import Direction
 # 192.168.56.101:5555
 # 192.168.56.102:5555
 delimiter = ' ||| '
-ignoreApkStatus = [0, 1]
+ignoreApkStatus = [0, 1, 2]
 loadSleepTime = 8
 switchSleepTime = 3
 
 
-# return value 0 success, 1 install fail, 2 no the same texts, 3 time out
-@timeout_decorator.timeout(480, timeout_exception=StopIteration)
+# return value 0 success, 1 install fail, 2 no the same texts, 3 time out, 4 fail others
+@timeout_decorator.timeout(600, timeout_exception=StopIteration)
 def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     # packageName = 'com.google.android.youtube'
     # packageName = 'com.tubitv'
@@ -43,6 +43,9 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     d1.sleep(5)
     d2.sleep(5)
 
+    dialogSolver(d1)
+    dialogSolver(d2)
+
     d1_activity, d1_package, d1_launcher = getActivityPackage(d1)
     d2_activity, d2_package, d2_launcher = getActivityPackage(d2)
     if d1_package != d2_package or d1_activity != d2_activity:
@@ -50,13 +53,10 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d1.sleep(loadSleepTime)
         d2.sleep(loadSleepTime)
 
-    grantPermissinActivitySolver(d1)
-    grantPermissinActivitySolver(d2)
-
     xml1 = d1.dump_hierarchy(compressed=True)
     xml2 = d2.dump_hierarchy(compressed=True)
-    img1 = d1.screenshot()
-    img2 = d2.screenshot()
+    img1 = safeScreenshot(d1)
+    img2 = safeScreenshot(d2)
     clickBounds1 = hierachySolver(xml1, xml2)
 
     if clickBounds1 is None or len(clickBounds1) == 0:
@@ -84,8 +84,8 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d2.sleep(3)
         xml11 = d1.dump_hierarchy(compressed=True)
         xml22 = d2.dump_hierarchy(compressed=True)
-        img11 = d1.screenshot()
-        img22 = d2.screenshot()
+        img11 = safeScreenshot(d1)
+        img22 = safeScreenshot(d2)
         xmlScreenSaver(subSaveDir, xml11, xml22, img11, img22, d1_activity, d2_activity)
 
         # swipe forward to collect more data
@@ -93,8 +93,8 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d2.swipe_ext(Direction.FORWARD)
         xml11 = d1.dump_hierarchy(compressed=True)
         xml22 = d2.dump_hierarchy(compressed=True)
-        img11 = d1.screenshot()
-        img22 = d2.screenshot()
+        img11 = safeScreenshot(d1)
+        img22 = safeScreenshot(d2)
         xmlScreenSaver(subSaveDir, xml11, xml22, img11, img22, d1_activity, d2_activity)
         d1.swipe_ext(Direction.BACKWARD)
         d2.swipe_ext(Direction.BACKWARD)
@@ -103,8 +103,13 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d1.press('back')
         d2.press('back')
         print('back...')
+
+        dialogSolver(d1)
+        dialogSolver(d2)
+
         d1.app_start(packageName, use_monkey=True)
         d2.app_start(packageName, use_monkey=True)
+
         d1.sleep(switchSleepTime)
         d2.sleep(switchSleepTime)
 
@@ -113,21 +118,13 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     d2.swipe_ext(Direction.FORWARD)
     xmla = d1.dump_hierarchy(compressed=True)
     xmlb = d2.dump_hierarchy(compressed=True)
-    imga = d1.screenshot()
-    imgb = d2.screenshot()
+    imga = safeScreenshot(d1)
+    imgb = safeScreenshot(d2)
     xmlScreenSaver(subSaveDir, xmla, xmlb, imga, imgb, d1_activity, d2_activity)
 
     clickBounds2 = hierachySolver(xmla, xmlb)
-
-    if clickBounds2 is None or len(clickBounds2) == 0:
-        print('no the same texts to click, exit')
-        d1.app_stop(packageName)
-        d2.app_stop(packageName)
-        print('uninstall ' + packageName)
-        d1.app_uninstall(packageName)
-        d2.app_uninstall(packageName)
-        return 2
-
+    if clickBounds2 is None:
+        return 0
     for i in clickBounds2:
         if i in clickBounds1:
             continue
@@ -156,6 +153,9 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
         d1.swipe_ext(Direction.BACKWARD)
         d2.swipe_ext(Direction.BACKWARD)
 
+        dialogSolver(d1)
+        dialogSolver(d2)
+
         # back to the original page
         d1.press('back')
         d2.press('back')
@@ -176,7 +176,8 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
 
 
 def batchUiExplorer():
-    apksDir = r'/Users/hhuu0025/Downloads/tem'
+    apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay/apks'
+    # apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks'
     saveDir = r'saveData'
     device1Id = '192.168.56.101:5555'
     device2Id = '192.168.56.102:5555'
@@ -217,6 +218,10 @@ def batchUiExplorer():
                         print('time out ' + file)
                         apks[file] = 3
                         f.write(file + delimiter + '3' + '\n')
+                    except Exception:
+                        print('fail other ' + file)
+                        apks[file] = 4
+                        f.write(file + delimiter + '4' + '\n')
 
 
 def unitTest():
