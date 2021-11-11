@@ -21,12 +21,8 @@ def apkpureDownloader(cat, package_name, saveDir):
     catDir = os.path.join(saveDir, cat)
     if not os.path.exists(catDir):
         os.mkdir(catDir)
-    scraper = cloudscraper.create_scraper(delay=10,
-                                          browser={
-                                              'browser': 'chrome',
-                                              'platform': 'windows',
-                                              'mobile': False
-                                          }
+    scraper = cloudscraper.create_scraper(delay=1000,
+                                          browser='chrome'
                                           )
 
     base_url = "https://apkpure.com"

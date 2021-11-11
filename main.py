@@ -11,16 +11,14 @@ from uiautomator2 import Direction
 # 192.168.56.101:5555
 # 192.168.56.102:5555
 delimiter = ' ||| '
-ignoreApkStatus = [0, 1, 2]
+ignoreApkStatus = [0, 1, 2, 5]
 loadSleepTime = 8
 switchSleepTime = 3
 
 
-# return value 0 success, 1 install fail, 2 no the same texts, 3 time out, 4 fail others
+# return value 0 success, 1 install fail, 2 no the same texts, 3 time out, 4 fail others, 5 no tablet adaption
 @timeout_decorator.timeout(600, timeout_exception=StopIteration)
 def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
-    # packageName = 'com.google.android.youtube'
-    # packageName = 'com.tubitv'
     d1, d2, connectStatus = connectionAdaptor(phoneDevice, tabletDevice)
     while not connectStatus:
         d1, d2, connectStatus = connectionAdaptor(phoneDevice, tabletDevice)
@@ -36,6 +34,8 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     installed2, packageName, mainActivity = installApk(apkPath, device=tabletDevice)
     if installed2 != 0:
         print('install ' + apkPath + ' fail.')
+        d1.app_stop(packageName)
+        d1.app_uninstall(packageName)
         return 1
     d2.app_start(packageName, use_monkey=True)
 
@@ -57,6 +57,17 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     xml2 = d2.dump_hierarchy(compressed=True)
     img1 = safeScreenshot(d1)
     img2 = safeScreenshot(d2)
+    size = img2.size
+
+    if size[0] < size[1]:
+        print('no tablet adaption')
+        d1.app_stop(packageName)
+        d2.app_stop(packageName)
+        print('uninstall ' + packageName)
+        d1.app_uninstall(packageName)
+        d2.app_uninstall(packageName)
+        return 5
+
     clickBounds1 = hierachySolver(xml1, xml2)
 
     if clickBounds1 is None or len(clickBounds1) == 0:
@@ -176,8 +187,8 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
 
 
 def batchUiExplorer():
-    apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay/apks'
-    # apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks'
+    # apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay'
+    apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks'
     saveDir = r'saveData'
     device1Id = '192.168.56.101:5555'
     device2Id = '192.168.56.102:5555'
@@ -214,6 +225,8 @@ def batchUiExplorer():
                             f.write(file + delimiter + '1' + '\n')
                         elif ret == 2:
                             f.write(file + delimiter + '2' + '\n')
+                        elif ret == 5:
+                            f.write(file + delimiter + '5' + '\n')
                     except StopIteration:
                         print('time out ' + file)
                         apks[file] = 3
