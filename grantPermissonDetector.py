@@ -6,9 +6,10 @@ from hierachySolver import bounds2int
 
 grantPermissinActivityFieldList = ['grantpermissions', 'grantpermission']
 dialogList = ['android.widget.TextView', 'android.widget.Button']
-yesFields = ['allow', 'yes']
+yesFields = ['allow', 'yes', 'allow only while using the app', 'once', 'while using the app', 'only this time']
 noFields = ['deny', 'no']
-dialogField = ['ok', 'got it', 'allow', 'yes', 'always', 'cancel', 'continue', 'exit']
+dialogField = ['ok', 'got it', 'allow', 'yes', 'always', 'cancel', 'continue', 'exit',
+               'allow only while using the app', 'once',  'while using the app', 'only this time']
 framelayoutList = ['android.widget.FrameLayout']
 dialogNameField = ['dialog']
 
@@ -108,18 +109,29 @@ def grantPermissinActivityTasker(d):
         if className is None:
             continue
         if className in dialogList:
-            text = child.attrib.get('text', None)
-            text = text.lower()
+            ori_text = child.attrib.get('text', None)
+            text = ori_text.lower()
             if text in yesFields:
                 bounds = child.attrib.get('bounds')
                 bounds = bounds2int(bounds)
                 if bounds[1] >= 200 and bounds[3] <= 1600:
-                    d.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+                    clickPointx = (bounds[0] + bounds[2]) / 2
+                    clickPointy = (bounds[1] + bounds[3]) / 2
+                    # tab: 2000 * 1200
+                    # phone: 1080 * 2240
+                    d.click(clickPointx, clickPointy)
+                    # d(text=ori_text).click()
                     print('solve grant permission activity')
 
 
 def dialogSolver(d):
+    index = 0
     while grantPermissinActivityDetector(d):
+        if index > 8:
+            print('xml bounds error, click back')
+            d.press('back')
+            break
         grantPermissinActivityTasker(d)
+        index += 1
 
     d.sleep(3)

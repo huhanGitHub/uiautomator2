@@ -1,3 +1,4 @@
+# encoding: utf8
 import uiautomator2 as u2
 import time
 from difflib import SequenceMatcher
@@ -93,7 +94,7 @@ def xmlScreenSaver(saveDir, xml1, xml2, img1, img2, activity1, activity2):
     img2Name = 'tablet_' + str(t) + '_' + activity1 + '.png'
     xml2Path = os.path.join(saveDir, xml2Name)
     img2Path = os.path.join(saveDir, img2Name)
-    with open(xml1Path, 'a') as f1, open(xml2Path, 'a') as f2:
+    with open(xml1Path, 'a', encoding='utf8') as f1, open(xml2Path, 'a', encoding='utf8') as f2:
         f1.write(xml1)
         f2.write(xml2)
         img1.save(img1Path)
@@ -101,6 +102,7 @@ def xmlScreenSaver(saveDir, xml1, xml2, img1, img2, activity1, activity2):
 
 
 def shorterFilename(saveDir):
+    index = 0
     for root, dirs, files in os.walk(saveDir):
         for file in files:
             if str(file).endswith('.apk') or str(file).endswith('.xapk'):
@@ -111,9 +113,19 @@ def shorterFilename(saveDir):
                 if len(name) > 25:
                     name = name[:25]
                 name = name.replace(' ', '_')
+                name = name.replace('\\', '')
                 newFile = name + '.' + extention
                 newFilePath = os.path.join(root, newFile)
-                os.rename(filePath, newFilePath)
+                try:
+                    os.rename(filePath, newFilePath)
+                except FileExistsError:
+                    print('exist, new name')
+                    newFile = name + str(index) + '.' + extention
+                    index += 1
+                    newFilePath = os.path.join(root, newFile)
+                    os.rename(filePath, newFilePath)
+                except OSError:
+                    print('os error')
 
 
 def safeScreenshot(d):
@@ -125,5 +137,5 @@ def safeScreenshot(d):
 
 
 if __name__ =='__main__':
-    saveDir = r'/Users/hhuu0025/Downloads/tem'
+    saveDir = r'E:\old_downloads'
     shorterFilename(saveDir)

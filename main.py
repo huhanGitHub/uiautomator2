@@ -1,3 +1,4 @@
+# encoding: utf8
 import uiautomator2 as u2
 from hierachySolver import *
 import time
@@ -17,7 +18,6 @@ switchSleepTime = 3
 
 
 # return value 0 success, 1 install fail, 2 no the same texts, 3 time out, 4 fail others, 5 no tablet adaption
-@timeout_decorator.timeout(600, timeout_exception=StopIteration)
 def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
     d1, d2, connectStatus = connectionAdaptor(phoneDevice, tabletDevice)
     while not connectStatus:
@@ -188,10 +188,10 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
 
 def batchUiExplorer():
     # apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay'
-    apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks'
+    apksDir = r'E:\old_downloads'
     saveDir = r'saveData'
-    device1Id = '192.168.56.101:5555'
-    device2Id = '192.168.56.102:5555'
+    device1Id = 'cb8c90f4'
+    device2Id = 'R52RA0C2MFF'
     log = r'log.txt'
     # return value 0 success, 1 install fail, 2 no the same texts, 3 time out
     # read test apks
@@ -205,7 +205,7 @@ def batchUiExplorer():
         apks[apk] = int(status)
 
     index = 0
-    with open(log, 'a+') as f:
+    with open(log, 'a+', encoding='utf8') as f:
         for root, dirs, files in os.walk(apksDir):
             for file in files:
                 if file.endswith('.apk') or file.endswith('.xapk'):
@@ -238,10 +238,10 @@ def batchUiExplorer():
 
 
 def unitTest():
-    apkPath = '/Users/hhuu0025/PycharmProjects/uiautomator2/apks/[PRODUCTIVITY]SendAnywhere _File Transfer_ by Estmob Inc.-com.estmob.android.sendanywhere.apk'
-    saveDir = 'saveData'
-    device1Id = '192.168.56.101:5555'
-    device2Id = '192.168.56.102:5555'
+    apkPath = r'E:\uiautomator\apks\YouTube_v16.45.34_apkpure.com.apk'
+    saveDir = 'save'
+    device1Id = 'cb8c90f4'
+    device2Id = 'R52RA0C2MFF'
     uiExplorer(apkPath, saveDir, device1Id, device2Id)
 
 
