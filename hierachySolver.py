@@ -115,6 +115,8 @@ def hierachySolver(xml1, xml2):
     if len(bottom) != 0:
         clickBounds.extend(bottom)
     if len(middle) != 0:
+        if len(middle) >= 5:
+            print('too many click points, truncate top10')
+            middle = middle[:5]
         clickBounds.extend(middle)
-
     return clickBounds

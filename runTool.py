@@ -12,7 +12,7 @@ from uiautomator2 import Direction
 # 192.168.56.101:5555
 # 192.168.56.102:5555
 delimiter = ' ||| '
-ignoreApkStatus = [0, 1, 2, 5]
+ignoreApkStatus = [0, 1, 5]
 loadSleepTime = 8
 switchSleepTime = 3
 
@@ -195,7 +195,7 @@ def batchUiExplorer():
     log = r'log.txt'
     # return value 0 success, 1 install fail, 2 no the same texts, 3 time out
     # read test apks
-    lines = open(log, 'r').readlines()
+    lines = open(log, 'r', encoding='utf8').readlines()
     apks = {}
     for i in lines:
         i = i.replace('\n', '')
