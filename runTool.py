@@ -12,7 +12,7 @@ from uiautomator2 import Direction
 # 192.168.56.101:5555
 # 192.168.56.102:5555
 delimiter = ' ||| '
-ignoreApkStatus = [0, 1, 5]
+ignoreApkStatus = [0, 1, 2, 5]
 loadSleepTime = 8
 switchSleepTime = 3
 
@@ -120,6 +120,9 @@ def uiExplorer(apkPath, saveDir, phoneDevice, tabletDevice):
 
         d1.app_start(packageName, use_monkey=True)
         d2.app_start(packageName, use_monkey=True)
+
+        dialogSolver(d1)
+        dialogSolver(d2)
 
         d1.sleep(switchSleepTime)
         d2.sleep(switchSleepTime)
