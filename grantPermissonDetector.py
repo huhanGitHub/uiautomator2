@@ -7,10 +7,11 @@ from hierachySolver import bounds2int
 grantPermissinActivityFieldList = ['grantpermissions', 'grantpermission']
 dialogList = ['android.widget.TextView', 'android.widget.Button']
 yesFields = ['allow', 'yes', 'allow only while using the app', 'once', 'while using the app', 'only this time',
-             'allow all the time', 'accept']
+             'allow all the time', 'accept', 'accept & continue', 'later']
 noFields = ['deny', 'no']
 dialogField = ['ok', 'got it', 'allow', 'yes', 'always', 'cancel', 'continue', 'exit',
-               'allow only while using the app', 'once',  'while using the app', 'only this time', 'allow all the time', 'accept']
+               'allow only while using the app', 'once',  'while using the app', 'only this time', 'allow all the time',
+               'accept', 'accept & continue', 'later']
 framelayoutList = ['android.widget.FrameLayout']
 dialogNameField = ['dialog']
 

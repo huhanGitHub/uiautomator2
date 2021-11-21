@@ -12,6 +12,7 @@ def connectionAdaptor(phoneDevice, tabletDevice):
     try:
         d1 = u2.connect(phoneDevice)
         d2 = u2.connect(tabletDevice)
+        d1.app_list()
         return d1, d2, True
     except requests.exceptions.ConnectionError:
         print('requests.exceptions.ConnectionError')
@@ -138,4 +139,6 @@ def safeScreenshot(d):
 
 if __name__ =='__main__':
     saveDir = r'E:\old_downloads'
+    maxLen = 100
+
     shorterFilename(saveDir)
