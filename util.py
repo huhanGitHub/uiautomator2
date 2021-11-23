@@ -137,6 +137,62 @@ def safeScreenshot(d):
         return None
 
 
+# return value 0 success, 1 install fail, 2 no the same texts, 3 time out, 4 fail others, 5 no tablet adaption
+def apksUninstall(apkPath, d1, d2, d1_packages, d2_packages):
+    # 0 success, 1 install fail
+    packageName, mainActivity = getPackageByApk(apkPath)
+    # d1_packages = d1.app_list()
+    # d2_packages = d2.app_list()
+    if packageName in d1_packages:
+        d1.app_stop(packageName)
+        d1.app_uninstall(packageName)
+        print('uninstall ' + packageName)
+    if packageName in d2_packages:
+        d2.app_stop(packageName)
+        d2.app_uninstall(packageName)
+        print('uninstall ' + packageName)
+
+    return 0
+
+
+def uninstallApks():
+    apksDir = r'E:\old_downloads'
+    device1Id = 'cb8c90f4'
+    device2Id = 'R52RA0C2MFF'
+    log = r'log.txt'
+    delimiter = ' ||| '
+    apks = {}
+    index = 0
+
+    d1, d2, connectStatus = connectionAdaptor(device1Id, device2Id)
+    while not connectStatus:
+        d1, d2, connectStatus = connectionAdaptor(device1Id, device2Id)
+
+    d1_packages = d1.app_list()
+    d2_packages = d2.app_list()
+
+    with open(log, 'a+', encoding='utf8') as f:
+        for root, dirs, files in os.walk(apksDir):
+            for file in files:
+                if file.endswith('.apk') or file.endswith('.xapk'):
+                    print('apk ' + str(index))
+                    index += 1
+                    if index <= 1253:
+                        continue
+                    filePath = os.path.join(root, file)
+
+                    try:
+                        ret = apksUninstall(filePath, d1, d2, d1_packages, d2_packages)
+                    except StopIteration:
+                        print('time out ' + file)
+                        apks[file] = 3
+                        f.write(file + delimiter + '3' + '\n')
+                    except Exception:
+                        print('fail other ' + file)
+                        apks[file] = 4
+                        f.write(file + delimiter + '4' + '\n')
+
+
 if __name__ =='__main__':
     saveDir = r'E:\old_downloads'
     maxLen = 100
