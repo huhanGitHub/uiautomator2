@@ -10,11 +10,12 @@ def batchInject():
         for apk in files:
             if not str(apk).endswith('.apk'):
                 continue
-
             apk_path = os.path.join(root, apk)
             app_save_dir = os.path.join(save_dir, apk)
-            # if not os.path.exists(app_save_dir):
-                # os.mkdir(app_save_dir)
+            re_packaged_apk = os.path.join(re_packaged_apks, apk)
+            if os.path.exists(app_save_dir) and os.path.exists(re_packaged_apk):
+                print(apk + 'skip')
+                continue
             print('Start apktool')
             cmd1 = 'apktool d ' + apk_path + ' -f -o ' + app_save_dir
             os.system(cmd1)
@@ -22,7 +23,7 @@ def batchInject():
             print('run inject apk')
             injectApk(app_save_dir)
 
-            re_packaged_apk = os.path.join(re_packaged_apks, apk)
+
             cmd2 = 'apktool b ' + app_save_dir + ' --use-aapt2 -o ' + re_packaged_apk
             os.system(cmd2)
 

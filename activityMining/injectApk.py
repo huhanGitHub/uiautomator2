@@ -56,7 +56,11 @@ def injectApk(folderName, deeplinks=r'deeplinks.txt'):
                              'category': [{'@android:name': 'android.intent.category.DEFAULT'},{'@android:name': 'android.intent.category.BROWSABLE'}],
                              'data': [{'@android:scheme': schemeName, '@android:host': activityName}]
                              },
+                        allLinks.append(f'{schemeName}://{activityName}')
     except FileNotFoundError as e:
+        print(e)
+        return
+    except TypeError as e:
         print(e)
         return
 

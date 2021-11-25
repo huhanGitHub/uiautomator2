@@ -21,7 +21,7 @@ def read_deeplinks(path):
 
 
 # adb shell am start -W -a android.intent.action.VIEW -d amazonprime://ParentalControlsSettings
-def unitTraverse(apkPath, deviceId, deeplinks_dict):
+def unitTraverse(apkPath, deviceId, deeplinks_dict, visited):
     try:
         d = u2.connect(deviceId)
     except requests.exceptions.ConnectionError:
@@ -32,10 +32,15 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict):
     if installed1 != 0:
         print('install ' + apkPath + ' fail.')
         return False
+    if packageName in visited:
+        print('visited ' + packageName)
+        d.app_uninstall(packageName)
+        return False
 
     links = deeplinks_dict.get(packageName, None)
     if links is None:
         print('no this package: ' + packageName)
+        d.app_uninstall(packageName)
         return False
 
     d1_activity, d1_package, d1_launcher = getActivityPackage(d)
@@ -43,7 +48,7 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict):
     total = len(links)
     success = 0
     for link in links:
-        cmd = 'adb shell am start -W -a android.intent.action.VIEW -d ' + link
+        cmd = 'adb -s ' + deviceId + ' shell am start -W -a android.intent.action.VIEW -d ' + link
         try:
             p = subprocess.run(cmd, shell=True, timeout=8)
         except subprocess.TimeoutExpired:
@@ -59,24 +64,37 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict):
         time.sleep(1)
     d.app_uninstall(packageName)
     print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
-    return total, success
+    return packageName, total, success
 
 
-def batchTraverse(apkDir, deviceId, deeplinks_dict):
+def batchTraverse(apkDir, deviceId, deeplinks_dict, log=r'log.txt'):
     total = 0
     success = 0
-    for root, dirs, files in os.walk(apkDir):
-        for file in files:
-            if str(file).endswith('.apk'):
-                file_path = os.path.join(root, file)
-                ret = unitTraverse(file_path, deviceId, deeplinks_dict)
-                if not ret:
-                    continue
-                curTotal, curSuccess = ret
-                total = total + curTotal
-                success = success + curSuccess
+    index = 0
+    visited = []
+    with open(log, 'r+', encoding='utf8') as f:
+        logs = f.readlines()
+        for line in logs:
+            line = line.split(':')
+            visited.append(line[0])
 
-    print('\n\n\n total: ' + str(total) + ' success: ' + str(success) + '\n\n\n')
+    with open(log, 'a+', encoding='utf8') as f:
+        for root, dirs, files in os.walk(apkDir):
+            for file in files:
+                if str(file).endswith('.apk'):
+                    file_path = os.path.join(root, file)
+                    ret = unitTraverse(file_path, deviceId, deeplinks_dict, visited)
+                    if not ret:
+                        continue
+                    packageName, curTotal, curSuccess = ret
+                    f.write(packageName + ':' + str(total) + ' ' + str(success) + '\n')
+                    total = total + curTotal
+                    success = success + curSuccess
+                    index += 1
+                    print('index: ' + str(index))
+
+        print('\n\n\n total: ' + str(total) + ' success: ' + str(success) + '\n\n\n')
+        f.write('\n\n\n total: ' + str(total) + ' success: ' + str(success) + '\n\n\n')
 
 
 if __name__ == '__main__':
@@ -86,7 +104,6 @@ if __name__ == '__main__':
     deviceId = '192.168.56.104'
     apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks'
     batchTraverse(apkDir, deviceId, deeplinks_dict)
-
 
 
 
