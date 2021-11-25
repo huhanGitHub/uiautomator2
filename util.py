@@ -156,7 +156,7 @@ def apksUninstall(apkPath, d1, d2, d1_packages, d2_packages):
 
 
 def uninstallApks():
-    apksDir = r'E:\old_downloads'
+    apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay/apks'
     device1Id = 'cb8c90f4'
     device2Id = 'R52RA0C2MFF'
     log = r'log.txt'
@@ -193,8 +193,45 @@ def uninstallApks():
                         f.write(file + delimiter + '4' + '\n')
 
 
+def uninstallApks_single(apk_dir, deviceId):
+    log = r'log.txt'
+    delimiter = ' ||| '
+    apks = {}
+    index = 0
+
+    d1 = u2.connect(deviceId)
+    d1_packages = d1.app_list()
+
+    with open(log, 'a+', encoding='utf8') as f:
+        for root, dirs, files in os.walk(apk_dir):
+            for file in files:
+                if file.endswith('.apk') or file.endswith('.xapk'):
+                    print('apk ' + str(index))
+                    index += 1
+                    filePath = os.path.join(root, file)
+
+                    try:
+                        packageName, mainActivity = getPackageByApk(filePath)
+                        if packageName in d1_packages:
+                            d1.app_stop(packageName)
+                            d1.app_uninstall(packageName)
+                            print('uninstall ' + packageName)
+                    except StopIteration:
+                        print('time out ' + file)
+                        apks[file] = 3
+                        f.write(file + delimiter + '3' + '\n')
+                    except Exception:
+                        print('fail other ' + file)
+                        apks[file] = 4
+                        f.write(file + delimiter + '4' + '\n')
+
+
 if __name__ =='__main__':
-    saveDir = r'E:\old_downloads'
+    saveDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay/apks'
     maxLen = 100
+
+    apksDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay/apks'
+    device1Id = '192.168.56.104'
+    #uninstallApks_single(apksDir, device1Id)
 
     shorterFilename(saveDir)

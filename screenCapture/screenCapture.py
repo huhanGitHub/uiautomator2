@@ -4,9 +4,9 @@ import os
 
 
 def screenCap():
-    saveDir = r'save'
-    phoneDevice = 'cb8c90f4'
-    tabletDevice = 'R52RA0C2MFF'
+    saveDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/saveScreen'
+    phoneDevice = '192.168.56.101'
+    tabletDevice = '192.168.56.102'
 
     d1, d2, connectStatus = connectionAdaptor(phoneDevice, tabletDevice)
     while not connectStatus:
