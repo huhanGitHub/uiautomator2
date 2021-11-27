@@ -43,7 +43,7 @@ def installApk(apkPath, device=None):
     command3 = prefixCmd + ' install ' + apkPath
     # os.system(command3)
     try:
-        out = subprocess.check_output(command3, shell=True, stderr=subprocess.STDOUT).decode('utf-8')
+        out = subprocess.check_output(command3, shell=True, stderr=subprocess.STDOUT, timeout=25).decode('utf-8')
         print('install ' + apkPath + ' success')
         return 0, packageName, mainActivity
     except subprocess.CalledProcessError as e:
@@ -54,6 +54,9 @@ def installApk(apkPath, device=None):
         return 1, packageName, mainActivity
     except FileNotFoundError:
         print('file not found: ' + apkPath)
+        return 1, packageName, mainActivity
+    except subprocess.TimeoutExpired:
+        print('cmd timeout， install fail')
         return 1, packageName, mainActivity
 
 
@@ -66,7 +69,11 @@ def getPackageByApk(apkPath):
 
 def getActivityPackage(d):
     isLauncher = False
-    d_current = d.app_current()
+    try:
+        d_current = d.app_current()
+    except OSError as e:
+        print(e)
+        return None, None, None
     d_package = d_current['package']
     d_activity = d_current['activity']
     if 'android' in d_activity and 'Launcher' in d_activity:

@@ -44,6 +44,10 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited):
         return False
 
     d1_activity, d1_package, d1_launcher = getActivityPackage(d)
+    if d1_activity is None:
+        print('error in get activity')
+        d.app_uninstall(packageName)
+        return False
 
     total = len(links)
     success = 0
@@ -54,9 +58,9 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited):
         except subprocess.TimeoutExpired:
             print('cmd timeout')
             d.app_stop(packageName)
-            time.sleep(1)
+            d.sleep(1)
             continue
-        time.sleep(5)
+        d.sleep(3)
         d2_activity, d2_package, d2_launcher = getActivityPackage(d)
         if d1_activity != d2_activity:
             success += 1
@@ -82,15 +86,18 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, log=r'log.txt'):
         for root, dirs, files in os.walk(apkDir):
             for file in files:
                 if str(file).endswith('.apk'):
+                    index += 1
+                    if index <= 16:
+                        continue
                     file_path = os.path.join(root, file)
                     ret = unitTraverse(file_path, deviceId, deeplinks_dict, visited)
                     if not ret:
                         continue
                     packageName, curTotal, curSuccess = ret
-                    f.write(packageName + ':' + str(total) + ' ' + str(success) + '\n')
+                    f.write(packageName + ' ' + str(curTotal) + ' ' + str(curSuccess) + '\n')
                     total = total + curTotal
                     success = success + curSuccess
-                    index += 1
+
                     print('index: ' + str(index))
 
         print('\n\n\n total: ' + str(total) + ' success: ' + str(success) + '\n\n\n')
@@ -101,7 +108,7 @@ if __name__ == '__main__':
     path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/deeplinks.txt'
     deeplinks_dict = read_deeplinks(path)
     apkPath = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/bilibili_v1.16.2_apkpure..apk'
-    deviceId = '192.168.56.104'
+    deviceId = '192.168.56.101'
     apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks'
     batchTraverse(apkDir, deviceId, deeplinks_dict)
 
