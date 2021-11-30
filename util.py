@@ -109,6 +109,22 @@ def xmlScreenSaver(saveDir, xml1, xml2, img1, img2, activity1, activity2):
         img2.save(img2Path)
 
 
+def xmlScreenSaver_single(saveDir, xml1, img1, activity1):
+    if img1 is None:
+        print('none img, save fail, return')
+        return
+
+    t = int(time.time())
+    xml1Name = 'phone_' + str(t) + '_' + activity1 + '.xml'
+    img1Name = 'phone_' + str(t) + '_' + activity1 + '.png'
+    xml1Path = os.path.join(saveDir, xml1Name)
+    img1Path = os.path.join(saveDir, img1Name)
+
+    with open(xml1Path, 'a', encoding='utf8') as f1:
+        f1.write(xml1)
+        img1.save(img1Path)
+
+
 def shorterFilename(saveDir):
     index = 0
     for root, dirs, files in os.walk(saveDir):

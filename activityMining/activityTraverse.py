@@ -2,7 +2,7 @@ import os
 import uiautomator2 as u2
 import requests
 import time
-from util import installApk, getActivityPackage
+from util import installApk, getActivityPackage, safeScreenshot, xmlScreenSaver_single
 import subprocess
 
 
@@ -21,7 +21,7 @@ def read_deeplinks(path):
 
 
 # adb shell am start -W -a android.intent.action.VIEW -d amazonprime://ParentalControlsSettings
-def unitTraverse(apkPath, deviceId, deeplinks_dict, visited):
+def unitTraverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
     try:
         d = u2.connect(deviceId)
     except requests.exceptions.ConnectionError:
@@ -64,6 +64,10 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited):
         d2_activity, d2_package, d2_launcher = getActivityPackage(d)
         if d1_activity != d2_activity:
             success += 1
+            xml1 = d.dump_hierarchy(compressed=True)
+            img1 = safeScreenshot(d)
+            xmlScreenSaver_single(save_dir, xml1, img1, d2_activity)
+
         d.app_stop(packageName)
         time.sleep(1)
     d.app_uninstall(packageName)
@@ -71,11 +75,14 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited):
     return packageName, total, success
 
 
-def batchTraverse(apkDir, deviceId, deeplinks_dict, log=r'log.txt'):
+def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
     total = 0
     success = 0
     index = 0
     visited = []
+    if not os.path.exists(save_dir):
+        os.mkdir(save_dir)
+
     with open(log, 'r+', encoding='utf8') as f:
         logs = f.readlines()
         for line in logs:
@@ -87,10 +94,10 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, log=r'log.txt'):
             for file in files:
                 if str(file).endswith('.apk'):
                     index += 1
-                    if index <= 16:
+                    if index <= 0:
                         continue
                     file_path = os.path.join(root, file)
-                    ret = unitTraverse(file_path, deviceId, deeplinks_dict, visited)
+                    ret = unitTraverse(file_path, deviceId, deeplinks_dict, visited, save_dir)
                     if not ret:
                         continue
                     packageName, curTotal, curSuccess = ret
@@ -110,7 +117,8 @@ if __name__ == '__main__':
     apkPath = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/bilibili_v1.16.2_apkpure..apk'
     deviceId = '192.168.56.101'
     apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks'
-    batchTraverse(apkDir, deviceId, deeplinks_dict)
+    save_dir = r'successScreen'
+    batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir)
 
 
 
