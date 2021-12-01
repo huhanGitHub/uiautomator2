@@ -1,9 +1,13 @@
 import xml.etree.ElementTree as ET
 
+import uiautomator2.exceptions
+import subprocess
+
 viewList = ['android.widget.TextView', 'android.widget.ImageView', 'android.widget.Button']
 removeView = ['']
 textViewList = ['android.widget.TextView']
 middleTexts = ['search']
+
 
 def nodeCompare(node1, node2):
     text1 = node1.attrib.get('text', None)
@@ -120,3 +124,41 @@ def hierachySolver(xml1, xml2):
             middle = middle[:5]
         clickBounds.extend(middle)
     return clickBounds
+
+
+def click_points_Solver(xml1):
+    tree1 = ET.ElementTree(ET.fromstring(xml1))
+    root1 = tree1.getroot()
+
+    # find all leaf node in the xml
+    leaves = []
+
+    for child in root1.iter():
+        className = child.attrib.get('class', None)
+        if className is None:
+            continue
+        if len(child) == 0:
+            package = child.attrib.get('package')
+            if 'systemui' not in package:
+                leaves.append(child)
+
+    return leaves
+
+
+def full_UI_click_test(sess, xml, cmd):
+    leaves = click_points_Solver(xml)
+    crash = []
+
+    for leaf in leaves:
+        bounds = leaf.attrib.get('bounds')
+        bounds = bounds2int(bounds)
+        try:
+            sess.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+            p = subprocess.run(cmd, shell=True, timeout=8)
+        except subprocess.TimeoutExpired:
+            print('cmd timeout')
+            return crash
+        except uiautomator2.exceptions.SessionBrokenError as e:
+            print(str(e))
+            crash.append(leaf)
+    return crash

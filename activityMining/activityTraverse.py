@@ -4,7 +4,9 @@ import requests
 import time
 from util import installApk, getActivityPackage, safeScreenshot, xmlScreenSaver_single
 import subprocess
-
+from grantPermissonDetector import dialogSolver
+from uiautomator2.exceptions import SessionBrokenError
+from hierachySolver import full_UI_click_test
 
 def read_deeplinks(path):
     links_dict = {}
@@ -27,7 +29,7 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
     except requests.exceptions.ConnectionError:
         print('requests.exceptions.ConnectionError')
         return False
-
+    crash_position = {}
     installed1, packageName, mainActivity = installApk(apkPath, device=deviceId)
     if installed1 != 0:
         print('install ' + apkPath + ' fail.')
@@ -43,36 +45,47 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
         d.app_uninstall(packageName)
         return False
 
+    total = len(links)
+    success = 0
+    sess = d.session(packageName)
     d1_activity, d1_package, d1_launcher = getActivityPackage(d)
+
     if d1_activity is None:
         print('error in get activity')
         d.app_uninstall(packageName)
         return False
 
-    total = len(links)
-    success = 0
-    for link in links:
+    for index, link in enumerate(links):
         cmd = 'adb -s ' + deviceId + ' shell am start -W -a android.intent.action.VIEW -d ' + link
         try:
             p = subprocess.run(cmd, shell=True, timeout=8)
         except subprocess.TimeoutExpired:
             print('cmd timeout')
-            d.app_stop(packageName)
-            d.sleep(1)
+            sess.app_stop(packageName)
+            sess.sleep(1)
             continue
-        d.sleep(3)
+        sess.sleep(3)
+        dialogSolver(d)
         d2_activity, d2_package, d2_launcher = getActivityPackage(d)
-        if d1_activity != d2_activity:
+        if d1_activity != d2_activity or index == 0:
             success += 1
             xml1 = d.dump_hierarchy(compressed=True)
             img1 = safeScreenshot(d)
             xmlScreenSaver_single(save_dir, xml1, img1, d2_activity)
 
-        d.app_stop(packageName)
-        time.sleep(1)
+            crash = full_UI_click_test(sess, xml1, cmd)
+
+            if len(crash) != 0:
+                crash_position[d2_activity] = crash
+                print(d2_activity, str(crash))
+
+            sess.app_stop(packageName)
+            sess.sleep(1)
+
+
     d.app_uninstall(packageName)
     print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
-    return packageName, total, success
+    return packageName, total, success, crash_position
 
 
 def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
@@ -89,6 +102,7 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
             line = line.split(':')
             visited.append(line[0])
 
+    crash_positions = {}
     with open(log, 'a+', encoding='utf8') as f:
         for root, dirs, files in os.walk(apkDir):
             for file in files:
@@ -100,8 +114,8 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
                     ret = unitTraverse(file_path, deviceId, deeplinks_dict, visited, save_dir)
                     if not ret:
                         continue
-                    packageName, curTotal, curSuccess = ret
-                    f.write(packageName + ' ' + str(curTotal) + ' ' + str(curSuccess) + '\n')
+                    packageName, curTotal, curSuccess, crash_positions = ret
+                    f.write(packageName + ' ' + str(curTotal) + ' ' + str(curSuccess) + ' ' + str(crash_positions) + '\n')
                     total = total + curTotal
                     success = success + curSuccess
 
