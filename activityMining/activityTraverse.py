@@ -8,6 +8,7 @@ from grantPermissonDetector import dialogSolver
 from uiautomator2.exceptions import SessionBrokenError
 from hierachySolver import full_UI_click_test
 
+
 def read_deeplinks(path):
     links_dict = {}
     with open(path, 'r', encoding='utf8') as f:
@@ -23,7 +24,7 @@ def read_deeplinks(path):
 
 
 # adb shell am start -W -a android.intent.action.VIEW -d amazonprime://ParentalControlsSettings
-def unitTraverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
+def unit_traverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
     try:
         d = u2.connect(deviceId)
     except requests.exceptions.ConnectionError:
@@ -88,7 +89,7 @@ def unitTraverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
     return packageName, total, success, crash_position
 
 
-def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
+def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
     total = 0
     success = 0
     index = 0
@@ -99,7 +100,7 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
     with open(log, 'r+', encoding='utf8') as f:
         logs = f.readlines()
         for line in logs:
-            line = line.split(':')
+            line = line.split(' ')
             visited.append(line[0])
 
     crash_positions = {}
@@ -111,7 +112,7 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
                     if index <= 0:
                         continue
                     file_path = os.path.join(root, file)
-                    ret = unitTraverse(file_path, deviceId, deeplinks_dict, visited, save_dir)
+                    ret = unit_traverse(file_path, deviceId, deeplinks_dict, visited, save_dir)
                     if not ret:
                         continue
                     packageName, curTotal, curSuccess, crash_positions = ret
@@ -126,13 +127,12 @@ def batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
 
 
 if __name__ == '__main__':
-    path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/deeplinks.txt'
+    path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/unit_test.txt'
     deeplinks_dict = read_deeplinks(path)
-    apkPath = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/bilibili_v1.16.2_apkpure..apk'
-    deviceId = '192.168.56.101'
-    apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks'
-    save_dir = r'successScreen'
-    batchTraverse(apkDir, deviceId, deeplinks_dict, save_dir)
+    deviceId = '192.168.57.101'
+    apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/unit_reapks'
+    save_dir = r'unit_screen'
+    batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir)
 
 
 

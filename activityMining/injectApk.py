@@ -12,7 +12,7 @@ import numpy as np
 import sys
 
 
-def injectApk(folderName, deeplinks=r'deeplinks.txt'):
+def injectApk(folderName, deeplinks=r'deeplinks2.txt'):
     # get packageName
     pkName = ''
     xmlDir = os.path.join(folderName, 'AndroidManifest.xml')
@@ -27,7 +27,7 @@ def injectApk(folderName, deeplinks=r'deeplinks.txt'):
             schemeName = pkName.replace('.', '_')
             if 'activity' in doc['manifest']['application'].keys():
                 for activity in doc['manifest']['application']['activity']:
-                    # print(activity)
+                    print(activity)
                     activity['@android:exported'] = True
                     activityName = activity['@android:name']
 
@@ -37,7 +37,7 @@ def injectApk(folderName, deeplinks=r'deeplinks.txt'):
                         if type(activity['intent-filter']) == list:
                             activity['intent-filter'].append(
                             {'action': [{'@android:name': 'android.intent.action.VIEW'}],
-                             'category': [{'@android:name': 'android.intent.category.DEFAULT'},{'@android:name': 'android.intent.category.BROWSABLE'}],
+                             'category': [{'@android:name': 'android.intent.category.DEFAULT'}, {'@android:name': 'android.intent.category.BROWSABLE'}],
                              'data': [{'@android:scheme': schemeName, '@android:host': activityName}]
                              }
                             )
@@ -53,7 +53,7 @@ def injectApk(folderName, deeplinks=r'deeplinks.txt'):
                         allLinks.append(f'{schemeName}://{activityName}')
                     else:
                         activity['intent-filter'] = {'action': [{'@android:name': 'android.intent.action.VIEW'}],
-                             'category': [{'@android:name': 'android.intent.category.DEFAULT'},{'@android:name': 'android.intent.category.BROWSABLE'}],
+                             'category': [{'@android:name': 'android.intent.category.DEFAULT'}, {'@android:name': 'android.intent.category.BROWSABLE'}],
                              'data': [{'@android:scheme': schemeName, '@android:host': activityName}]
                              },
                         allLinks.append(f'{schemeName}://{activityName}')
@@ -78,6 +78,6 @@ if __name__ == '__main__':
     args = sys.argv
     folderName = args[1]
     # folderName = 'Amazon Prime Video by Amazon Mobile LLC - com.amazon.avod.thirdpartyclient'
-    deeplinks = r'deeplinks.txt'
+    deeplinks = r'deeplinks2.txt'
     injectApk(folderName, deeplinks)
 

@@ -154,6 +154,7 @@ def full_UI_click_test(sess, xml, cmd):
         bounds = bounds2int(bounds)
         try:
             sess.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
+            sess.sleep(1)
             p = subprocess.run(cmd, shell=True, timeout=8)
         except subprocess.TimeoutExpired:
             print('cmd timeout')
