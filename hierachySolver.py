@@ -156,10 +156,12 @@ def full_UI_click_test(sess, xml, cmd):
             sess.click((bounds[0] + bounds[2]) / 2, (bounds[1] + bounds[3]) / 2)
             sess.sleep(1)
             p = subprocess.run(cmd, shell=True, timeout=8)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as e:
             print('cmd timeout')
-            return crash
-        except uiautomator2.exceptions.SessionBrokenError as e:
             print(str(e))
-            crash.append(leaf)
+            crash.append(leaf.attrib)
+            return crash
+        # except uiautomator2.exceptions.SessionBrokenError as e:
+        #     print(str(e))
+        #     crash.append(leaf)
     return crash

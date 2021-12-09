@@ -19,45 +19,49 @@ def connectionAdaptor(phoneDevice, tabletDevice):
         return None, None, False
 
 
-def installApk(apkPath, device=None):
+def installApk(apkPath, device=None, reinstall=True):
     packageName, mainActivity = getPackageByApk(apkPath)
 
-    # check if installed
-    prefixCmd = 'adb '
-    if device is not None:
-        print('device: ' + device)
-        prefixCmd = prefixCmd + '-s ' + device
+    if reinstall:
+        # check if installed
+        prefixCmd = 'adb '
+        if device is not None:
+            print('device: ' + device)
+            prefixCmd = prefixCmd + '-s ' + device
 
-    command1 = prefixCmd + ' shell pm list packages -3'
-    packages = subprocess.check_output(command1, shell=True, stderr=subprocess.STDOUT).decode('utf-8')
-    packages = packages.replace('package:', '').strip()
-    packages = packages.replace('\r', '').strip()
-    packages = packages.split('\n')
-    if packageName in packages:
-        print(packageName + ' has installed, begin to uninstall it')
-        command2 = prefixCmd + ' uninstall ' + packageName
-        out = subprocess.check_output(command2, shell=True, stderr=subprocess.STDOUT).decode('utf-8')
-        print('uninstall success')
+        command1 = prefixCmd + ' shell pm list packages -3'
+        packages = subprocess.check_output(command1, shell=True, stderr=subprocess.STDOUT).decode('utf-8')
+        packages = packages.replace('package:', '').strip()
+        packages = packages.replace('\r', '').strip()
+        packages = packages.split('\n')
+        if packageName in packages:
+            print(packageName + ' has installed, begin to uninstall it')
+            command2 = prefixCmd + ' uninstall ' + packageName
+            out = subprocess.check_output(command2, shell=True, stderr=subprocess.STDOUT).decode('utf-8')
+            print('uninstall success')
 
-    # begin to install apk
-    command3 = prefixCmd + ' install ' + apkPath
-    # os.system(command3)
-    try:
-        out = subprocess.check_output(command3, shell=True, stderr=subprocess.STDOUT, timeout=25).decode('utf-8')
-        print('install ' + apkPath + ' success')
+        # begin to install apk
+        command3 = prefixCmd + ' install ' + apkPath
+        # os.system(command3)
+        try:
+            out = subprocess.check_output(command3, shell=True, stderr=subprocess.STDOUT, timeout=25).decode('utf-8')
+            print('install ' + apkPath + ' success')
+            return 0, packageName, mainActivity
+        except subprocess.CalledProcessError as e:
+            print('install apk error: ' + apkPath)
+            out = e.output.decode('utf-8')
+            print(out)
+            # 'adb: failed to install apks/VidMate.apk: Failure [INSTALL_FAILED_ALREADY_EXISTS: Attempt to re-install com.nemo.vidmate without first uninstalling.]
+            return 1, packageName, mainActivity
+        except FileNotFoundError:
+            print('file not found: ' + apkPath)
+            return 1, packageName, mainActivity
+        except subprocess.TimeoutExpired:
+            print('cmd timeout， install fail')
+            return 1, packageName, mainActivity
+
+    else:
         return 0, packageName, mainActivity
-    except subprocess.CalledProcessError as e:
-        print('install apk error: ' + apkPath)
-        out = e.output.decode('utf-8')
-        print(out)
-        # 'adb: failed to install apks/VidMate.apk: Failure [INSTALL_FAILED_ALREADY_EXISTS: Attempt to re-install com.nemo.vidmate without first uninstalling.]
-        return 1, packageName, mainActivity
-    except FileNotFoundError:
-        print('file not found: ' + apkPath)
-        return 1, packageName, mainActivity
-    except subprocess.TimeoutExpired:
-        print('cmd timeout， install fail')
-        return 1, packageName, mainActivity
 
 
 def getPackageByApk(apkPath):

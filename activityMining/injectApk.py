@@ -45,7 +45,7 @@ def injectApk(folderName, deeplinks=r'deeplinks2.txt'):
                             tempdict = activity['intent-filter']
                             activity['intent-filter'] = [tempdict]
                             activity['intent-filter'].append({'action': [{'@android:name': 'android.intent.action.VIEW'}],
-                             'category': [{'@android:name': 'android.intent.category.DEFAULT'},{'@android:name': 'android.intent.category.BROWSABLE'}],
+                             'category': [{'@android:name': 'android.intent.category.DEFAULT'}, {'@android:name': 'android.intent.category.BROWSABLE'}],
                              'data': [{'@android:scheme': schemeName, '@android:host': activityName}]
                              }
                             )

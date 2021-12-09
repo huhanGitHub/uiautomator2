@@ -31,7 +31,7 @@ def unit_traverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
         print('requests.exceptions.ConnectionError')
         return False
     crash_position = {}
-    installed1, packageName, mainActivity = installApk(apkPath, device=deviceId)
+    installed1, packageName, mainActivity = installApk(apkPath, device=deviceId, reinstall=False)
     if installed1 != 0:
         print('install ' + apkPath + ' fail.')
         return False
@@ -48,7 +48,7 @@ def unit_traverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
 
     total = len(links)
     success = 0
-    sess = d.session(packageName)
+    # sess = d.session(packageName)
     d1_activity, d1_package, d1_launcher = getActivityPackage(d)
 
     if d1_activity is None:
@@ -62,10 +62,15 @@ def unit_traverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
             p = subprocess.run(cmd, shell=True, timeout=8)
         except subprocess.TimeoutExpired:
             print('cmd timeout')
-            sess.app_stop(packageName)
-            sess.sleep(1)
+            d.app_stop(packageName)
+            d.sleep(1)
             continue
-        sess.sleep(3)
+        except u2.exceptions.SessionBrokenError as e:
+            print('crash', str(e))
+            print(link)
+            continue
+
+        d.sleep(3)
         dialogSolver(d)
         d2_activity, d2_package, d2_launcher = getActivityPackage(d)
         if d1_activity != d2_activity or index == 0:
@@ -74,15 +79,14 @@ def unit_traverse(apkPath, deviceId, deeplinks_dict, visited, save_dir):
             img1 = safeScreenshot(d)
             xmlScreenSaver_single(save_dir, xml1, img1, d2_activity)
 
-            crash = full_UI_click_test(sess, xml1, cmd)
+            #crash = full_UI_click_test(sess, xml1, cmd)
 
-            if len(crash) != 0:
-                crash_position[d2_activity] = crash
-                print(d2_activity, str(crash))
+            # if len(crash) != 0:
+            #     crash_position[d2_activity] = crash
+            #     print(d2_activity, str(crash))
 
-            sess.app_stop(packageName)
-            sess.sleep(1)
-
+            d.app_stop(packageName)
+            d.sleep(1)
 
     d.app_uninstall(packageName)
     print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
@@ -130,8 +134,9 @@ if __name__ == '__main__':
     path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/unit_test.txt'
     deeplinks_dict = read_deeplinks(path)
     deviceId = '192.168.57.101'
+    # deviceId = 'VEG0220B17010232'
     apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/unit_reapks'
-    save_dir = r'unit_screen'
+    save_dir = r'unit_screen_sourcecode'
     batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir)
 
 
