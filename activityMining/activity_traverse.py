@@ -83,23 +83,23 @@ def unit_traverse(apkPath, d, deeplinks_dict, visited, save_dir):
     print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
     return packageName, total, success, crash_position
 
-
+# return status: 0 success, 1 install fail, 2 visited, 3 no package in deeplink, 4 not conversion, 5 other fail
 def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, visited, save_dir, collected_packages):
     intent_error_msg = 'Error: Activity not started'
     crash_position = {}
     installed1, packageName, mainActivity = installApk(apkPath, device=deviceId1, reinstall=True)
     if installed1 != 0:
         print('install ' + apkPath + ' fail.')
-        return False
+        return 1, packageName, 0, 0, crash_position
     if packageName in visited:
         print('visited ' + packageName)
         d1.app_uninstall(packageName)
-        return False
+        return 2, packageName, 0, 0, crash_position
 
     if packageName not in collected_packages:
         print('not conversion ' + packageName)
         d1.app_uninstall(packageName)
-        return
+        return 4, packageName, 0, 0, crash_position
     else:
         save_dir_package = os.path.join(save_dir, packageName)
         if not os.path.exists(save_dir_package):
@@ -109,14 +109,14 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
     if installed2 != 0:
         print('install ' + apkPath + ' fail.')
         d1.app_uninstall(packageName)
-        return False
+        return 1, packageName, 0, 0, crash_position
 
     links = deeplinks_dict.get(packageName, None)
     if links is None:
         print('no this package: ' + packageName)
         d1.app_uninstall(packageName)
         d2.app_uninstall(packageName)
-        return False
+        return 3, packageName, 0, 0, crash_position
 
     total = len(links)
     success = 0
@@ -127,12 +127,12 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
     if d1_activity is None:
         print('error in get activity')
         d1.app_uninstall(packageName)
-        return False
+        return 5, packageName, 0, 0, crash_position
 
     if d2_activity is None:
         print('error in get activity')
         d2.app_uninstall(packageName)
-        return False
+        return 5, packageName, 0, 0, crash_position
 
     for index, link in enumerate(links):
         cmd1 = 'adb -s ' + deviceId1 + ' shell am start -W -a android.intent.action.VIEW -d ' + link
@@ -161,7 +161,7 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
         d11_activity, d11_package, d11_launcher = getActivityPackage(d1)
         d22_activity, d22_package, d22_launcher = getActivityPackage(d2)
 
-        if (d1_activity != d11_activity and d2_activity != d22_activity) or index == 0:
+        if d1_activity != d11_activity and d2_activity != d22_activity:
             success += 1
             xml1 = d1.dump_hierarchy(compressed=True)
             img1 = safeScreenshot(d1)
@@ -178,7 +178,7 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
                 print('uninstall ' + packageName)
                 d1.app_uninstall(packageName)
                 d2.app_uninstall(packageName)
-                return
+                continue
 
             xmlScreenSaver(save_dir_package, xml1, xml2, img1, img2, d11_activity, d22_activity)
 
@@ -191,7 +191,7 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
     d1.app_uninstall(packageName)
     d2.app_uninstall(packageName)
     print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
-    return packageName, total, success, crash_position
+    return 0, packageName, total, success, crash_position
 
 
 def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, collected_packages, log=r'log.txt'):
@@ -242,7 +242,7 @@ def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir
     total = 0
     success = 0
     index = 0
-    visited = []
+    visited = set()
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
 
@@ -250,7 +250,7 @@ def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir
         logs = f.readlines()
         for line in logs:
             line = line.split(' ')
-            visited.append(line[0])
+            visited.add(line[0])
 
     try:
         d1 = u2.connect(deviceId1)
@@ -270,10 +270,8 @@ def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir
                     index += 1
                     file_path = os.path.join(root, file)
                     ret = unit_traverse_phoTab(file_path, d1, d2, deviceId1, deviceId2, deeplinks_dict, visited, save_dir, collected_packages)
-                    if not ret:
-                        continue
-                    packageName, curTotal, curSuccess, crash_positions = ret
-                    f.write(packageName + ' ' + str(curTotal) + ' ' + str(curSuccess) + ' ' + str(crash_positions) + '\n')
+                    status, packageName, curTotal, curSuccess, crash_positions = ret
+                    f.write(packageName + ' ' + str(status) + ' ' + str(curTotal) + ' ' + str(curSuccess) + ' ' + str(crash_positions) + '\n')
                     total = total + curTotal
                     success = success + curSuccess
 

@@ -43,13 +43,6 @@ def batch_run():
     deeplinks_dict = read_deeplinks(deeplinks_path)
 
     log = r'pho_tab_log.txt'
-    visited = []
-    with open(log, 'a+', encoding='utf8') as f:
-        logs = f.readlines()
-        for line in logs:
-            line = line.split(' ')
-            visited.append(line[0])
-
     save_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/pho_tab_pair'
     if not os.path.exists(save_dir):
         os.mkdir(save_dir)
@@ -59,7 +52,7 @@ def batch_run():
     deviceId1 = '192.168.57.101'
     deviceId2 = '192.168.57.102'
 
-    batch_traverse_phoTab(apk_dir, deviceId1, deviceId2, deeplinks_dict, save_dir, package_dir, log=r'pho_tab_log.txt')
+    batch_traverse_phoTab(apk_dir, deviceId1, deviceId2, deeplinks_dict, save_dir, package_dir, log=log)
 
 
 if __name__ == '__main__':
