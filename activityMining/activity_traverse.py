@@ -85,6 +85,7 @@ def unit_traverse(apkPath, d, deeplinks_dict, visited, save_dir):
 
 
 def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, visited, save_dir, collected_packages):
+    intent_error_msg = 'Error: Activity not started'
     crash_position = {}
     installed1, packageName, mainActivity = installApk(apkPath, device=deviceId1, reinstall=True)
     if installed1 != 0:
@@ -96,17 +97,18 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
         return False
 
     if packageName not in collected_packages:
+        print('not conversion ' + packageName)
+        d1.app_uninstall(packageName)
         return
     else:
         save_dir_package = os.path.join(save_dir, packageName)
+        if not os.path.exists(save_dir_package):
+            os.mkdir(save_dir_package)
 
     installed2, packageName, mainActivity = installApk(apkPath, device=deviceId2, reinstall=True)
     if installed2 != 0:
         print('install ' + apkPath + ' fail.')
-        return False
-    if packageName in visited:
-        print('visited ' + packageName)
-        d2.app_uninstall(packageName)
+        d1.app_uninstall(packageName)
         return False
 
     links = deeplinks_dict.get(packageName, None)
@@ -133,9 +135,15 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
         return False
 
     for index, link in enumerate(links):
-        cmd = 'adb -s ' + deviceId + ' shell am start -W -a android.intent.action.VIEW -d ' + link
+        cmd1 = 'adb -s ' + deviceId1 + ' shell am start -W -a android.intent.action.VIEW -d ' + link
+        cmd2 = 'adb -s ' + deviceId2 + ' shell am start -W -a android.intent.action.VIEW -d ' + link
         try:
-            p = subprocess.run(cmd, shell=True, timeout=8)
+            p1 = subprocess.run(cmd1, shell=True, timeout=8, capture_output=True).stdout
+            p2 = subprocess.run(cmd2, shell=True, timeout=8, capture_output=True).stdout
+
+            if intent_error_msg in str(p1) or intent_error_msg in str(p2):
+                print('intent fail')
+                continue
         except subprocess.TimeoutExpired:
             print('cmd timeout')
             d1.app_stop(packageName)
@@ -186,7 +194,7 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
     return packageName, total, success, crash_position
 
 
-def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
+def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, collected_packages, log=r'log.txt'):
     total = 0
     success = 0
     index = 0
@@ -230,7 +238,7 @@ def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'log.txt'):
         f.write('\n\n\n total: ' + str(total) + ' success: ' + str(success) + '\n\n\n')
 
 
-def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir, log=r'log.txt'):
+def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir, package_dir, log=r'log.txt'):
     total = 0
     success = 0
     index = 0
@@ -253,7 +261,7 @@ def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir
 
     crash_positions = {}
 
-    collected_packages = [i for i in os.listdir(save_dir)]
+    collected_packages = [i for i in os.listdir(package_dir)]
 
     with open(log, 'a+', encoding='utf8') as f:
         for root, dirs, files in os.walk(apkDir):

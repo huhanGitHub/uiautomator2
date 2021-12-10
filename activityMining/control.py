@@ -1,4 +1,4 @@
-from activityTraverse import read_deeplinks, batchTraverse
+from activity_traverse import read_deeplinks, batchTraverse
 
 
 if __name__ == '__main__':
