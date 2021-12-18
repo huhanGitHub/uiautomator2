@@ -26,7 +26,8 @@ def read_deeplinks(path):
 # adb shell am start -W -a android.intent.action.VIEW -d amazonprime://ParentalControlsSettings
 def unit_traverse(apkPath, d, deeplinks_dict, visited, save_dir):
     crash_position = {}
-    installed1, packageName, mainActivity = installApk(apkPath, reinstall=False)
+    success_activities = []
+    installed1, packageName, mainActivity = installApk(apkPath, reinstall=True)
     if installed1 != 0:
         print('install ' + apkPath + ' fail.')
         return False
@@ -69,7 +70,7 @@ def unit_traverse(apkPath, d, deeplinks_dict, visited, save_dir):
             xml1 = d.dump_hierarchy(compressed=True)
             img1 = safeScreenshot(d)
             xmlScreenSaver_single(save_dir, xml1, img1, d2_activity)
-
+            success_activities.append(d2_activity)
             #crash = full_UI_click_test(sess, xml1, cmd)
 
             # if len(crash) != 0:
@@ -79,14 +80,16 @@ def unit_traverse(apkPath, d, deeplinks_dict, visited, save_dir):
             d.app_stop(packageName)
             d.sleep(1)
 
-    d.app_uninstall(packageName)
+    # d.app_uninstall(packageName)
     print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
-    return packageName, total, success, crash_position
+    return packageName, total, success, success_activities
+
 
 # return status: 0 success, 1 install fail, 2 visited, 3 no package in deeplink, 4 not conversion, 5 other fail
 def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, visited, save_dir, collected_packages):
     intent_error_msg = 'Error: Activity not started'
     crash_position = {}
+    success_activities = []
     installed1, packageName, mainActivity = installApk(apkPath, device=deviceId1, reinstall=True)
     if installed1 != 0:
         print('install ' + apkPath + ' fail.')
@@ -181,6 +184,7 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
                 continue
 
             xmlScreenSaver(save_dir_package, xml1, xml2, img1, img2, d11_activity, d22_activity)
+            success_activities.append(d11_activity)
 
             d1.app_stop(packageName)
             d1.sleep(1)
@@ -190,11 +194,11 @@ def unit_traverse_phoTab(apkPath, d1, d2, deviceId1, deviceId2, deeplinks_dict, 
 
     d1.app_uninstall(packageName)
     d2.app_uninstall(packageName)
-    print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + '\n\n\n')
-    return 0, packageName, total, success, crash_position
+    print('\n\n\n' + packageName + ':' + str(total) + ' ' + str(success) + ' ' + str(success_activities) + '\n\n\n')
+    return 0, packageName, total, success, success_activities
 
 
-def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, collected_packages, log=r'log.txt'):
+def batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, log=r'debug_log.txt'):
     total = 0
     success = 0
     index = 0
@@ -282,13 +286,14 @@ def batch_traverse_phoTab(apkDir, deviceId1, deviceId2, deeplinks_dict, save_dir
 
 
 if __name__ == '__main__':
-    path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/unit_test.txt'
-    deeplinks_dict = read_deeplinks(path)
+    deeplink_path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/deeplinks2.txt'
+    deeplinks_dict = read_deeplinks(deeplink_path)
     deviceId = '192.168.57.101'
     # deviceId = 'VEG0220B17010232'
-    apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/unit_reapks'
-    save_dir = r'unit_screen_sourcecode'
-    batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir)
+    apkDir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/smali_samples/reapks'
+    save_dir = r'screenshots_open/unit_screen_samples/'
+    log = r'debug_log.txt'
+    batch_traverse(apkDir, deviceId, deeplinks_dict, save_dir, log)
 
 
 

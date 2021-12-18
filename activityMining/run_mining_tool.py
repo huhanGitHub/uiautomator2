@@ -6,7 +6,7 @@ def unit_run_mining_tool():
     # apk_path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/googleplay/apks/BUSINESS/com.doft.android.carrier/doft_free_load_board_truc.apk'
     # apk_path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks/youtube.apk'
     # apk_path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks/Twitter_v9.22.0-release.0_apkpure.com.apk'
-    apk_path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks/app-debug.apk'
+    apk_path = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks/org.oxycblt.auxio_10.apk'
     app_save_dir = '/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/unit_test'
     re_packaged_apk = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/unit_reapks/unit.apk'
     deeplinks_path = r'./unit_test.txt'

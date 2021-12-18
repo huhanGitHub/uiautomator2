@@ -1,4 +1,4 @@
-from activity_traverse import unit_traverse_phoTab, batch_traverse_phoTab, read_deeplinks
+from activity_traverse_debug import unit_traverse_phoTab, batch_traverse_phoTab, read_deeplinks
 import os
 import uiautomator2 as u2
 import requests
@@ -56,5 +56,5 @@ def batch_run():
 
 
 if __name__ == '__main__':
-    # unit_run()
-    batch_run()
+    unit_run()
+    # batch_run()

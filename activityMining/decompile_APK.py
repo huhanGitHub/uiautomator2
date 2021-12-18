@@ -50,9 +50,9 @@ def unit_sign_APK(apk_path):
 
 
 if __name__ == '__main__':
-    re_packaged_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks'
-    apk_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks/apk'
-    save_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/unittest'
+    re_packaged_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/smali_samples/reapks'
+    apk_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks'
+    save_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/smali_samples/smalis'
     deeplinks_path = r'deeplinks2.txt'
     batch_inject(apk_dir, save_dir, re_packaged_dir, deeplinks_path)
     batch_sign_apks(re_packaged_dir)
