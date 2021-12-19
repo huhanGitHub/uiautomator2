@@ -1,5 +1,9 @@
 import os
 import json
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
 intent_smali_fileds = 'Landroid/content/Intent;->get'
 const_string = 'const-string'
 
@@ -34,13 +38,35 @@ def smali_intent_para_extractor():
     save_path = r'intent_para.json'
     apps_intent_para = {}
     apps = [i for i in os.listdir(path)]
+
+    # find package names for each app
+    packages = []
     for app in apps:
+        app_path = os.path.join(path, app)
+        for file in os.listdir(app_path):
+            if 'AndroidManifest.xml' in file:
+                file_path = os.path.join(app_path, file)
+                if 'original' in file_path:
+                    continue
+                try:
+                    tree = ET.parse(file_path)
+                    root = tree.getroot()
+                    package = root.attrib.get('package')
+                except ET.ParseError as e:
+                    print(str(e))
+                    print(file_path)
+                    package = file
+
+                packages.append(package)
+
+    for subscript, app in enumerate(apps):
         app_path = os.path.join(path, app)
         intent_para = {}
         for root, dirs, files in os.walk(app_path):
             for file in files:
+                # use suffix 'activity' to judge
                 if 'activity' in file or 'Activity' in file:
-                    if file.endswith('.smali') and '$' not in file:
+                    if file.endswith('.smali'):
                         file_path = os.path.join(root, file)
                         pairs = []
                         with open(file_path, 'r+', encoding='utf8') as f:
@@ -63,15 +89,22 @@ def smali_intent_para_extractor():
                                             tag = tag.replace('\n', '')
                                             pair = [tag, field]
                                             pairs.append(pair)
-                                            print(temp)
+                                            # print(temp)
                                             break
                                         else:
                                             pre_index = pre_index - 1
 
                             if len(pairs) != 0:
-                                intent_para[file] = pairs
+                                # handle anonymous functions in an activity
+                                if '$' in file:
+                                    file = file.split('$')[0]
 
-        apps_intent_para[app] = intent_para
+                                file = file.replace('.smali', '')
+                                cur_pairs = intent_para.setdefault(file, [])
+                                cur_pairs.extend(pairs)
+                                intent_para[file] = cur_pairs
+
+        apps_intent_para[packages[subscript]] = intent_para
     save_json = json.dumps(apps_intent_para)
     with open(save_path, 'a+', encoding='utf8') as f2:
         f2.write(save_json)
