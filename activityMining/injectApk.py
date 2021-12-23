@@ -27,7 +27,7 @@ def injectApk(folderName, deeplinks=r'deeplinks2.txt'):
             schemeName = pkName.replace('.', '_')
             if 'activity' in doc['manifest']['application'].keys():
                 for activity in doc['manifest']['application']['activity']:
-                    print(activity)
+                    # print(activity)
                     activity['@android:exported'] = True
                     activityName = activity['@android:name']
 
@@ -63,6 +63,9 @@ def injectApk(folderName, deeplinks=r'deeplinks2.txt'):
     except TypeError as e:
         print(e)
         return
+    except KeyError as e:
+        print(e)
+        return e
 
     with open(xmlDir, 'w') as fd:
         fd.write(xmltodict.unparse(doc, pretty=True))
