@@ -45,14 +45,14 @@ def unit_inject(apk_path, app_save_dir, re_packaged_apk, deeplinks_path):
 
 def unit_sign_APK(apk_path):
     print('sign ' + apk_path)
-    cmd3 = '/Users/hhuu0025/Downloads/SDK/build-tools/31.0.0/apksigner sign --ks /Users/hhuu0025/.android/debug.keystore --ks-pass pass:android --key-pass pass:android ' + apk_path
+    cmd3 = '/home/suyu/Android/Sdk/build-tools/30.0.3/apksigner sign --ks /home/suyu/.android/debug.keystore --ks-pass pass:android --key-pass pass:android ' + apk_path
     os.system(cmd3)
 
 
 if __name__ == '__main__':
-    re_packaged_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/smali_samples/reapks'
-    apk_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/apks'
-    save_dir = r'/Users/hhuu0025/PycharmProjects/uiautomator2/activityMining/re_apks/smali_samples/smalis'
-    deeplinks_path = r'deeplinks2.txt'
+    re_packaged_dir = r'/home/suyu/Documents/suyu/disk2/hanhu/reapks'
+    apk_dir = r'/home/suyu/Documents/suyu/disk2/top_apks/apks'
+    save_dir = r'/home/suyu/Documents/suyu/disk2/hanhu/apk_smalis'
+    deeplinks_path = r'/home/suyu/Documents/suyu/disk2/hanhu/deeplinks/deeplinks.txt'
     batch_inject(apk_dir, save_dir, re_packaged_dir, deeplinks_path)
     batch_sign_apks(re_packaged_dir)
