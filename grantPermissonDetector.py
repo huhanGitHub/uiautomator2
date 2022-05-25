@@ -135,5 +135,4 @@ def dialogSolver(d):
             break
         grantPermissinActivityTasker(d)
         index += 1
-
     d.sleep(3)

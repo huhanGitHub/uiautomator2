@@ -37,6 +37,7 @@ def pairTextview(phoneViews, tabletViews):
         text1 = textview1.attrib.get('text', None)
         for textview2 in tabletViews:
             text2 = textview2.attrib.get('text', None)
+            # TODO: both text may be none, still paired?
             if text1 == text2:
                 pair = [textview1, textview2, text1]
                 pairs.append(pair)
@@ -45,6 +46,7 @@ def pairTextview(phoneViews, tabletViews):
     if len(pairs) <= 0:
         return None, None, None
 
+    # TODO: change number maybe?
     # select possible top tablayout texts according to Y axis less than 200
     top = []
     # select possible bottom navigation texts according to the Y axis more than 1700
@@ -76,6 +78,7 @@ def pairTextview(phoneViews, tabletViews):
 
 
 def bounds2int(bounds):
+    # example: bounds="[0,0][600,1327]"
     bounds = bounds.replace('][', ',')
     bounds = bounds[1:-1]
     bounds = [int(i) for i in bounds.split(',')]

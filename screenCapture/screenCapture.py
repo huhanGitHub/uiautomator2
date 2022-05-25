@@ -1,4 +1,3 @@
-import uiautomator2 as u2
 from util import connectionAdaptor, getActivityPackage, xmlScreenSaver, safeScreenshot
 import os
 

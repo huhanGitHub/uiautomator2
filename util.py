@@ -90,27 +90,28 @@ def similar(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 
-def xmlScreenSaver(saveDir, xml1, xml2, img1, img2, activity1, activity2):
-    if img1 is None or img2 is None:
+def xmlScreenSaver(saveDir, phoneXml, tabletXml,
+                   phoneImg, tabletImg, phoneAvtivity, tabletActivity):
+    if phoneImg is None or tabletImg is None:
         print('none img, save fail, return')
         return
 
     t = int(time.time())
-    xml1Name = 'phone_' + str(t) + '_' + activity1 + '.xml'
-    img1Name = 'phone_' + str(t) + '_' + activity1 + '.png'
+    xml1Name = 'phone_' + str(t) + '_' + phoneAvtivity + '.xml'
+    img1Name = 'phone_' + str(t) + '_' + phoneAvtivity + '.png'
     xml1Path = os.path.join(saveDir, xml1Name)
     img1Path = os.path.join(saveDir, img1Name)
 
     # name both with activity1
-    xml2Name = 'tablet_' + str(t) + '_' + activity1 + '.xml'
-    img2Name = 'tablet_' + str(t) + '_' + activity1 + '.png'
+    xml2Name = 'tablet_' + str(t) + '_' + phoneAvtivity + '.xml'
+    img2Name = 'tablet_' + str(t) + '_' + phoneAvtivity + '.png'
     xml2Path = os.path.join(saveDir, xml2Name)
     img2Path = os.path.join(saveDir, img2Name)
     with open(xml1Path, 'a', encoding='utf8') as f1, open(xml2Path, 'a', encoding='utf8') as f2:
-        f1.write(xml1)
-        f2.write(xml2)
-        img1.save(img1Path)
-        img2.save(img2Path)
+        f1.write(phoneXml)
+        f2.write(tabletXml)
+        phoneImg.save(img1Path)
+        tabletImg.save(img2Path)
 
 
 def xmlScreenSaver_single(saveDir, xml1, img1, activity1):

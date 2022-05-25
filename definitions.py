@@ -28,3 +28,4 @@ CSV_VM = os.path.join(OUT_DIR, "results_vm.csv")
 PHONE_ID = "LMK420TSUKR8PVTG7P"
 TABLET_ID = "R52RA0C2MFF"
 VM_ID = "192.168.56.101:5555"
+# VM_ID = "emulator-5554"
